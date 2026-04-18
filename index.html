@@ -6,120 +6,95 @@
     <title>Five Hearts: Karanlık Şehir</title>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { 
+        
+        body, html { 
             background: #000; color: #fff; 
             font-family: 'Courier New', monospace; 
             margin: 0; padding: 0;
-            overflow: hidden; 
-            width: 100vw; height: 100vh;
+            overflow: hidden; /* Kaydırmayı tamamen engeller */
+            width: 100%; 
+            /* iOS Safari için dinamik yükseklik ayarı */
+            height: 100vh;
+            height: 100dvh; 
         }
 
-        /* KARANLIK ŞEHİR ARKA PLANI */
         #game-container { 
-            width: 100vw; height: 100vh;
+            width: 100%; 
+            height: 100vh;
+            height: 100dvh; 
             background: url('sehir.jpg') no-repeat center bottom;
             background-size: cover;
             display: flex; flex-direction: column; justify-content: flex-end;
             position: relative;
+            /* iOS güvenli alan boşlukları */
+            padding-bottom: env(safe-area-inset-bottom);
         }
 
-        /* SİNEMATİK PARAZİT EFEKTİ (GLITCH) */
-        #game-container::after {
-            content: " ";
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1), rgba(0,0,0,0.1) 1px, transparent 1px, transparent 2px);
-            pointer-events: none; z-index: 20;
+        /* Ekranın kaymasını engelleyen katman */
+        #visual-area { 
+            flex: 1; position: relative; overflow: hidden; 
+            touch-action: none; /* iOS'ta sürükleyerek yenilemeyi (pull-to-refresh) kapatır */
         }
 
-        /* SOL ALT KARAKTER PENCERESİ */
+        /* Karakter Penceresi (iOS için yerleşim ayarı) */
         #char-frame {
-            position: absolute; bottom: 190px; left: 25px;
-            width: 110px; height: 150px;
+            position: absolute; bottom: 10px; left: 20px;
+            width: 100px; height: 140px;
             border-left: 4px solid #ff4b2b;
             background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-            display: flex; justify-content: center; align-items: flex-start;
+            display: none; justify-content: center; align-items: flex-start;
             z-index: 10; overflow: hidden;
-            animation: fadeIn 0.8s ease-in;
-            display: none; /* Başlangıçta gizli */
         }
 
-        #char-img { 
-            height: 100%; width: auto; 
-            object-fit: contain; object-position: top;
-        }
+        #char-img { height: 100%; width: auto; object-fit: contain; object-position: top; }
 
-        /* DİYALOG ALANI */
+        /* Diyalog Kutusu */
         #dialogue-box { 
-            background: linear-gradient(to top, #000 70%, rgba(0,0,0,0.8));
+            background: linear-gradient(to top, #000 80%, rgba(0,0,0,0.8));
             border-top: 2px solid rgba(255,75,43,0.5);
-            padding: 30px 25px calc(25px + env(safe-area-inset-bottom));
-            min-height: 200px; z-index: 15;
+            padding: 20px 20px;
+            min-height: 180px; z-index: 15;
             display: flex; flex-direction: column;
         }
 
-        #char-name { 
-            color: #ff4b2b; font-size: 1.4em; font-weight: bold; 
-            margin-bottom: 10px; letter-spacing: 2px;
-            text-shadow: 2px 2px 5px rgba(255,0,0,0.3);
-        }
+        #char-name { color: #ff4b2b; font-size: 1.2em; font-weight: bold; margin-bottom: 5px; }
+        #main-text { font-size: 1em; line-height: 1.4; color: #ddd; flex: 1; }
 
-        #main-text { 
-            font-size: 1.1em; line-height: 1.6; color: #ddd;
-            animation: textReveal 0.5s ease-out;
-            flex: 1; /* Metin alanını genişlet */
-        }
-
-        /* BUTONLAR */
-        .choices { display: flex; gap: 15px; margin-top: auto; } /* Butonları alta sabitle */
+        .choices { display: flex; gap: 10px; margin-top: 15px; }
         button { 
-            background: transparent; color: #fff; 
-            border: 1px solid #ff4b2b; padding: 15px;
-            cursor: pointer; flex: 1; 
-            font-family: 'Courier New', monospace;
-            transition: 0.3s; text-transform: uppercase;
+            background: transparent; color: #fff; border: 1px solid #ff4b2b; 
+            padding: 12px; cursor: pointer; flex: 1; font-family: 'Courier New', monospace;
+            font-size: 0.9em;
         }
-        button:hover { background: #ff4b2b; color: #000; box-shadow: 0 0 15px #ff4b2b; }
 
-        /* ÖLÜM VE GALİBİYET EKRANLARI (TAM EKRAN) */
+        /* EKRANLARI ÜSTE SABİTLEME */
         .fullscreen-overlay { 
-            background: #000; z-index: 100; 
-            display: none; position: absolute; top: 0; width: 100%; height: 100%; 
+            background: #000; z-index: 100; display: none; position: absolute; 
+            top: 0; left: 0; width: 100%; height: 100%; 
             justify-content: center; align-items: center; flex-direction: column;
-            text-align: center; padding: 20px;
         }
+        #death-screen { color: #ff0000; }
+        #win-screen { color: #fff; background: #000; }
 
-        #death-screen { color: #ff0000; animation: flash 0.2s infinite; }
-        #win-screen { 
-            color: #fff; 
-            background: linear-gradient(to bottom, #000, #1a1a1a);
-            animation: fadeInWin 2s ease-in;
-        }
-
-        /* ANİMASYONLAR */
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes textReveal { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes flash { 0% { opacity: 1; } 50% { opacity: 0.8; } 100% { opacity: 1; } }
-        @keyframes fadeInWin { from { opacity: 0; } to { opacity: 1; } }
         @keyframes beat { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
     </style>
 </head>
-<body>
-
-<div id="game-container">
+<body scroll="no"> <div id="game-container">
     <div id="death-screen" class="fullscreen-overlay">
-        <h1 style="font-size: 3em; letter-spacing: 5px;">ZEHRA SENİ YEDİ</h1>
-        <button onclick="location.reload()" style="max-width: 250px; margin-top: 30px;">TEKRAR DENE</button>
+        <h1 style="font-size: 2em;">ZEHRA SENİ YEDİ</h1>
+        <button onclick="location.reload()" style="max-width: 200px; margin-top: 20px;">DENE</button>
     </div>
 
     <div id="win-screen" class="fullscreen-overlay">
-        <h1 style="font-size: 2.5em; letter-spacing: 3px; margin-bottom: 10px;">MUTLU SON</h1>
+        <h1 style="font-size: 2em;">MUTLU SON</h1>
         <p style="font-size: 1.5em; color: #ff4b2b; animation: beat 1s infinite;">beni affet ❤️</p>
-        <p style="font-size: 1em; color: #aaa; margin-top: 20px;">Karanlığın içinde bir ışık buldunuz.</p>
-        <button onclick="location.reload()" style="max-width: 200px; margin-top: 40px; border-color: #fff;">BAŞTAN OYNA</button>
+        <button onclick="location.reload()" style="max-width: 200px; margin-top: 30px;">BAŞTAN</button>
     </div>
 
-    <div id="char-frame">
-        <img id="char-img" src="" alt="">
+    <div id="visual-area">
+        <div id="char-frame">
+            <img id="char-img" src="" alt="">
+        </div>
     </div>
 
     <div id="dialogue-box">
@@ -130,56 +105,27 @@
 </div>
 
 <script>
-    // Karakterler ve Lokal PNG Linkleri
-    const imgs = {
-        "Ayşe": "ayse.png",    // Beyaz askılı kız
-        "Zehra": "zehra.png",   // Bej ceketli kız
-        "Kahraman": "kahraman.png" // Erkek karakter
-    };
-
-    // Oyun Verisi ve Hikaye Akışı
+    const imgs = { "Ayşe": "ayse.png", "Zehra": "zehra.png", "Kahraman": "kahraman.png" };
     const data = {
         start: { char: "Ayşe", text: "Zehra... Seni Kahraman'la gördüm rüyamda. Bu karanlık şehrin içinde tek umudunuz birbirinizdiniz. Bence ona bir şans ver.", opts: [{ t: "Kabul Et", n: "death" }, { t: "Ayşe'yi Süründür", n: "step2" }] },
         death: { death: true },
-        step2: { char: "Zehra", text: "Hadi oradan Ayşe! Ama madem bu kadar eminsin, istek atarsa bakarız... (O akşam...)", opts: [{ t: "Mesajı Oku", n: "step3" }] },
-        step3: { char: "Kahraman", text: "Zehra... Seninle ayrılmam gerek ve sebepsiz bir ayrılık", opts: [{ t: "Onu Dinle", n: "step4" }, { t: "Güvenme", n: "death" }] },
-        step4: { char: "Kahraman", text: "Seni korumak için her şeyi yaparım. ama bunu yapamam ", opts: [{ t: "Peşinden Koş", n: "step5" }] },
+        step2: { char: "Zehra", text: "Hadi oradan Ayşe! Ama bu kadar eminsin, istek atarsa bakarız... (O akşam...)", opts: [{ t: "Mesajı Oku", n: "step3" }] },
+        step3: { char: "Kahraman", text: "Zehra... Seninle konuşmam gerek. Bu şehir artık güvenli değil, gitmemiz gerek.", opts: [{ t: "Onunla Git", n: "step4" }, { t: "Güvenme", n: "death" }] },
+        step4: { char: "Kahraman", text: "Seni korumak için her şeyi yaparım. Ama önce geçmişin gölgelerinden kurtulmalıyız.", opts: [{ t: "Peşinden Koş", n: "step5" }] },
         step5: { char: "Zehra", text: "'Neler olduğunu anlatacaksın Kahraman!' Onu köşeye sıkıştırdın.", opts: [{ t: "Dinle", n: "step6" }] },
         step6: { char: "Kahraman", text: "Özür dilerim. Seni kaybetmekten korktum ama yanılmışım. Beni affedebilir misin?", opts: [{ t: "Affet ❤️", n: "happy" }, { t: "Reddet", n: "death" }] },
-        happy: { win: true } // Galibiyet ekranını tetikler
+        happy: { win: true }
     };
 
     function render(key) {
         const s = data[key];
-        
-        // Ölüm Ekranı Kontrolü
-        if (s.death) {
-            document.getElementById('death-screen').style.display = 'flex';
-            document.getElementById('char-frame').style.display = 'none'; // Karakteri gizle
-            return;
-        }
-
-        // Galibiyet Ekranı Kontrolü
-        if (s.win) {
-            document.getElementById('win-screen').style.display = 'flex';
-            document.getElementById('char-frame').style.display = 'none'; // Karakteri gizle
-            return;
-        }
-
+        if (s.death) { document.getElementById('death-screen').style.display = 'flex'; return; }
+        if (s.win) { document.getElementById('win-screen').style.display = 'flex'; return; }
         const img = document.getElementById('char-img');
         const frame = document.getElementById('char-frame');
-        
-        // Karakter resmi kontrolü
-        if (imgs[s.char]) {
-            img.src = imgs[s.char];
-            frame.style.display = 'flex';
-        } else {
-            frame.style.display = 'none';
-        }
-
+        if (imgs[s.char]) { img.src = imgs[s.char]; frame.style.display = 'flex'; } else { frame.style.display = 'none'; }
         document.getElementById('char-name').innerText = s.char || "";
         document.getElementById('main-text').innerText = s.text;
-        
         const optCont = document.getElementById('options');
         optCont.innerHTML = '';
         (s.opts || []).forEach(o => {
@@ -189,8 +135,6 @@
             optCont.appendChild(b);
         });
     }
-
-    // Oyunu başlat
     render('start');
 </script>
 </body>
