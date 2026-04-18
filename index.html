@@ -82,7 +82,7 @@
 <body scroll="no"> <div id="game-container">
     <div id="death-screen" class="fullscreen-overlay">
         <h1 style="font-size: 2em;">ZEHRA SENİ YEDİ</h1>
-        <button onclick="location.reload()" style="max-width: 200px; margin-top: 20px;">DENE</button>
+        <button onclick="location.reload()" style="max-width: 200px; margin-top: 20px;">TEKRAR DENE</button>
     </div>
 
     <div id="win-screen" class="fullscreen-overlay">
@@ -110,10 +110,11 @@
         start: { char: "Ayşe", text: "Zehra... Seni Kahraman'la gördüm rüyamda. Bu karanlık şehrin içinde tek umudunuz birbirinizdiniz. Bence ona bir şans ver.", opts: [{ t: "Kabul Et", n: "death" }, { t: "Ayşe'yi Süründür", n: "step2" }] },
         death: { death: true },
         step2: { char: "Zehra", text: "Hadi oradan Ayşe! Ama bu kadar eminsin, istek atarsa bakarız... (O akşam...)", opts: [{ t: "Mesajı Oku", n: "step3" }] },
-        step3: { char: "Kahraman", text: "Zehra... Seninle konuşmam gerek. Bu şehir artık güvenli değil, gitmemiz gerek.", opts: [{ t: "Onunla Git", n: "step4" }, { t: "Güvenme", n: "death" }] },
-        step4: { char: "Kahraman", text: "Seni korumak için her şeyi yaparım. Ama önce geçmişin gölgelerinden kurtulmalıyız.", opts: [{ t: "Peşinden Koş", n: "step5" }] },
+        step3: { char: "Kahraman", text: "Zehra... Seninle konuşmam gerek. .", opts: [{ t: "Onunla Git", n: "step4" }, { t: "Güvenme", n: "death" }] },
+        step4: { char: "Kahraman", text: "Seni korumak için her şeyi yaparım. ama senin iyliğin için sebepsiz ayrılmamız gerek.", opts: [{ t: "Peşinden Koş", n: "step5" }] },
         step5: { char: "Zehra", text: "'Neler olduğunu anlatacaksın Kahraman!' Onu köşeye sıkıştırdın.", opts: [{ t: "Dinle", n: "step6" }] },
-        step6: { char: "Kahraman", text: "Özür dilerim. Seni kaybetmekten korktum ama yanılmışım. Beni affedebilir misin?", opts: [{ t: "Affet ❤️", n: "happy" }, { t: "Reddet", n: "death" }] },
+        step6: { char: "Kahraman", text: "Bak ailevi sornlar çıktı ama yanılmışım ",  opts: [{ t: "Dinle", n: "step7" }] },
+        step7: { char: "Kahraman", text: "Özür dilerim. Seni kaybetmekten korktum ama yanılmışım. Beni affedebilir misin?", opts: [{ t: "Affet ❤️", n: "happy" }, { t: "Reddet", n: "death" }] },
         happy: { win: true }
     };
 
