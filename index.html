@@ -105,6 +105,7 @@
 </div>
 
 <script>
+    render('start');
     const imgs = { "Ayşe": "ayse.png", "Zehra": "zehra.png", "Kahraman": "kahraman.png" };
     const data = {
         start: { char: "Ayşe", text: "Zehra... Seni Kahraman'la rüyamda gördüm. Bir çocuğunuz vardı ve çok mutluydunuz Bence ona bir şans ver.", opts: [{ t: "Kabul Et", n: "death" }, { t: "Ayşe'yi Süründür", n: "step2" }] },
@@ -118,51 +119,51 @@
         step8: { char: "Kahraman", text: "Bak ailevi sorunlar çıktı ama yanılmışım! ",  opts: [{ t: "Dinle", n: "step9" }] },
         step9: { char: "Kahraman", text: "Özür dilerim. Seni kaybetmekten korktum ama yanılmışım. Beni affedebilir misin?", opts: [{ t: "Affet ❤️", n: "happy" }, { t: "Reddet", n: "death" }] },
         happy: { win: true }
-    };
-let typingTimer; // Mevcut yazma işlemini durdurmak için
 
-function render(key) {
-  const s = data[key];
-  if (s.death) { document.getElementById('death-screen').style.display = 'flex'; return; }
-  if (s.win) { document.getElementById('win-screen').style.display = 'flex'; return; }
+let typingTimer; 
 
-  // Karakter resmi ayarı
-  const img = document.getElementById('char-img');
-  const frame = document.getElementById('char-frame');
-  if (imgs[s.char]) {
-    img.src = imgs[s.char];
-    frame.style.display = 'flex';
-  } else {
-    frame.style.display = 'none';
-  }
+function render(key) { 
+    const s = data[key]; 
+    if (s.death) { document.getElementById('death-screen').style.display = 'flex'; return; } 
+    if (s.win) { document.getElementById('win-screen').style.display = 'flex'; return; }
 
-  document.getElementById('char-name').innerText = s.char || "";
-  const textElement = document.getElementById('main-text');
-  const optCont = document.getElementById('options');
-
-  // Daktilo efekti başlangıcı
-  textElement.innerText = "";
-  optCont.style.display = "none"; // Yazı bitene kadar butonları sakla
-  clearTimeout(typingTimer);
-  
-  let i = 0;
-  function typeWriter() {
-    if (i < s.text.length) {
-      textElement.innerText += s.text.charAt(i);
-      i++;
-      typingTimer = setTimeout(typeWriter, 30); // 30ms hızında yaz
-    } else {
-      optCont.style.display = "flex"; // Yazı bittiğinde butonları göster
+    const img = document.getElementById('char-img'); 
+    const frame = document.getElementById('char-frame'); 
+    if (imgs[s.char]) { 
+        img.src = imgs[s.char]; 
+        frame.style.display = 'flex'; 
+    } else { 
+        frame.style.display = 'none'; 
     }
-  }
-  typeWriter();
 
-  // Butonları oluştur
-  optCont.innerHTML = '';
-  (s.opts || []).forEach(o => {
-    const b = document.createElement('button');
-    b.innerText = o.t;
-    b.onclick = () => render(o.n);
-    optCont.appendChild(b);
-  });
+    document.getElementById('char-name').innerText = s.char || ""; 
+    const textElement = document.getElementById('main-text'); 
+    const optCont = document.getElementById('options');
+
+    textElement.innerText = ""; 
+    optCont.style.display = "none"; 
+    clearTimeout(typingTimer);
+
+    let i = 0; 
+    function typeWriter() { 
+        if (i < s.text.length) { 
+            textElement.innerText += s.text.charAt(i); 
+            i++; 
+            typingTimer = setTimeout(typeWriter, 30); 
+        } else { 
+            optCont.style.display = "flex"; 
+        } 
+    } 
+    typeWriter();
+
+    optCont.innerHTML = ''; 
+    (s.opts || []).forEach(o => { 
+        const b = document.createElement('button'); 
+        b.innerText = o.t; 
+        b.onclick = () => render(o.n); 
+        optCont.appendChild(b); 
+    });
 }
+
+// OYUNU BAŞLATAN KRİTİK SATIR:
+render('start');
