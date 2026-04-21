@@ -126,6 +126,7 @@
 
     function playTypeSound() {
         const sound = new Audio('daktilo.mp3');
+        sound.volume = 0.4; // Ses biraz daha kısık, kafa yormasın
         sound.play().catch(() => {});
         sound.onended = function() { this.remove(); };
     }
@@ -161,13 +162,15 @@
                 textElement.innerText += s.text.charAt(i);
                 
 
-                if (s.text.charAt(i) !== " ") {
+                // KESİN ÇÖZÜM: Hem boşlukta çalmaz, hem de her 2 harften birinde çalar (ritim için)
+                if (s.text.charAt(i) !== " " && i % 2 === 0) {
                     playTypeSound();
                 }
 
 
                 i++;
-                typingTimer = setTimeout(typeWriter, 60);
+                // Yazma hızı 100ms oldu, daktilo gibi tane tane yazar.
+                typingTimer = setTimeout(typeWriter, 100);
             } else {
                 optCont.style.display = "flex";
             }
