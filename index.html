@@ -116,14 +116,14 @@
 <div id="game-container">
     <div id="death-screen" class="fullscreen-overlay">
         <h1>ZEHRA SENİ YEDİ</h1>
-        <button onclick="resetGame()" style="max-width: 150px; padding: 8px; font-size: 0.8em; margin-top: 20px;">TEKRAR DENE</button>
+        <button onclick="resetGame()" style="max-width: 180px; width: 100%; margin-top: 20px;">TEKRAR DENE</button>
     </div>
 
     <div id="win-screen" class="fullscreen-overlay">
         <h1>MUTLU SON</h1>
         <img src="image_4.png" id="win-photo" alt="Kahraman ve Zehra Sarılıyor">
         <p style="color: #ff4b2b; animation: beat 1s infinite;">beni affet ❤️</p>
-        <button onclick="resetGame()" style="max-width: 150px; padding: 8px; font-size: 0.8em; margin-top: 30px;">BAŞTAN</button>
+        <button onclick="resetGame()" style="max-width: 180px; width: 100%; margin-top: 30px;">BAŞTAN</button>
     </div>
 
     <div id="visual-area"><div id="char-frame"><img id="char-img" src="" alt=""></div></div>
@@ -151,37 +151,35 @@
         step10: { char: "Ayse", text: "HAYIRDIR!!!! .", opts: [{ t: "...", n: "step11" }] },
         step11: { char: "Kahraman", text: "beni zehrayla görüntülü konuşturman lazım.", opts: [{ t: "...", n: "step12" }] },
         step12: { char: "Ayse", text: "ben hallederim sıkma canını", opts: [{ t: "...", n: "step13" }] },
-        step12: { char: "Kahraman", text: "sana güveniyorumm", opts: [{ t: "yarına geç", n: "step13" }] },
-        step13: { char: "anybody", text: "ayşeyle zehra okulda buluşurlar .", opts: [{ t: "kahramanı ara", n: "step14" }] },
-        step14: { char: "Zehra", text: "hadi kahramanı arayalımm", opts: [{ t: "ara", n: "step15" }] },
-        step15: { char: "Ayse", text: "hadi arayalım", opts: [{ t: "arama başlatır", n: "step16" }] },
-        step16: { char: "anybody", text: "kahramanı ararlar", opts: [{ t: "alo", n: "step17" }, { t: "yüzüne kapat", n: "death" }] },
-        step17: { char: "Zehra", text: "aloooo", opts: [{ t: "...", n: "step18" }] },
-        step18: { char: "Kahraman", text: "aloo", opts: [{ t: "dinle", n: "step19" }] },
-        step19: { char: "Kahraman", text: "ayşe bana bir sözün vardıı vakti geldi sanki", opts: [{ t: "şaşırmış gibi yap", n: "step20" }, { t: "zaten bildiğini söyle", n: "death" }] },
-        step20: { char: "Zehra", text: "ne sözü ayşe ", opts: [{ t: "?", n: "step21" }] },
-        step21: { char: "Ayşe", text: "görüntülü arayacağım", opts: [{ t: "süründür(kahramanı)", n: "step22" }, { t: "kabul et", n: "death" }] },
-        step22: { char: "Zehra", text: "HAYIR ÇİNGENLERE BENZİORUM AMK .", opts: [{ t: "kolpa kadınsın", n: "step23" }] },
-        step23: { char: "Kahraman", text: "HAYIR ben seni her halinle seviyoum ve arıyorum beklee", opts: [{ t: "ARAMA", n: "step24" }, { t: "ARA", n: "death" }] },
-        step24: { char: "Zehra", text: "İNTERNETİM YOK (BAHANE)", opts: [{ t: "üzüldü kahraman", n: "step25" }] },
-        step25: { char: "Kahraman", text: "öyle olsun", opts: [{ t: "...", n: "step26" }] },
-        step26: { char: "ANYBODY", text: "SONRAKİ AKŞAM", opts: [{ t: "...", n: "step27" }] },
-        step27: { char: "Kahraman", text: "zehra üzgünüm ama sebepsiz ayrılmamız lazım", opts: [{ t: "neden amk", n: "step28" }, { t: "ayrıl", n: "death" }] },
-        step28: { char: "Kahraman", text: "Seni korumak için her şeyi yaparım. ama senin iyliğin için sebepsiz ayrılmamız gerek.", opts: [{ t: "vazgeçme", n: "step29" },{ t: "vazgeç", n: "death" }] },
-        step29: { char: "Zehra", text: "'Neler olduğunu anlatacaksın Kahraman!' Onu köşeye sıkıştırdın.", opts: [{ t: "Dinle", n: "step30" }] },
-        step30: { char: "Kahraman", text: "Bak ailevi sorunlar çıktı ama yanılmışım! ", opts: [{ t: "Dinle", n: "step31" }] },
-        step31: { char: "Kahraman", text: "Özür dilerim. Seni kaybetmekten korktum ama yanılmışım. Beni affedebilir misin?", opts: [{ t: "Affet ❤️", n: "happy" }, { t: "Reddet", n: "death" }] },
+        step13: { char: "Kahraman", text: "sana güveniyorumm", opts: [{ t: "yarına geç", n: "step14" }] },
+        step14: { char: "anybody", text: "ayşeyle zehra okulda buluşurlar .", opts: [{ t: "kahramanı ara", n: "step15" }] },
+        step15: { char: "Zehra", text: "hadi kahramanı arayalımm", opts: [{ t: "ara", n: "step16" }] },
+        step16: { char: "Ayse", text: "hadi arayalım", opts: [{ t: "arama başlatır", n: "step17" }] },
+        step17: { char: "anybody", text: "kahramanı ararlar", opts: [{ t: "alo", n: "step18" }, { t: "yüzüne kapat", n: "death" }] },
+        step18: { char: "Zehra", text: "aloooo", opts: [{ t: "...", n: "step19" }] },
+        step19: { char: "Kahraman", text: "aloo", opts: [{ t: "dinle", n: "step20" }] },
+        step20: { char: "Kahraman", text: "ayşe bana bir sözün vardıı vakti geldi sanki", opts: [{ t: "şaşırmış gibi yap", n: "step21" }, { t: "zaten bildiğini söyle", n: "death" }] },
+        step21: { char: "Zehra", text: "ne sözü ayşe ", opts: [{ t: "?", n: "step22" }] },
+        step22: { char: "Ayşe", text: "görüntülü arayacağım", opts: [{ t: "süründür(kahramanı)", n: "step23" }, { t: "kabul et", n: "death" }] },
+        step23: { char: "Zehra", text: "HAYIR ÇİNGENLERE BENZİORUM AMK .", opts: [{ t: "kolpa kadınsın", n: "step24" }] },
+        step24: { char: "Kahraman", text: "HAYIR ben seni her halinle seviyoum ve arıyorum beklee", opts: [{ t: "ARAMA", n: "step25" }, { t: "ARA", n: "death" }] },
+        step25: { char: "Zehra", text: "İNTERNETİM YOK (BAHANE)", opts: [{ t: "üzüldü kahraman", n: "step26" }] },
+        step26: { char: "Kahraman", text: "öyle olsun", opts: [{ t: "...", n: "step27" }] },
+        step27: { char: "ANYBODY", text: "SONRAKİ AKŞAM", opts: [{ t: "...", n: "step28" }] },
+        step28: { char: "Kahraman", text: "zehra üzgünüm ama sebepsiz ayrılmamız lazım", opts: [{ t: "neden amk", n: "step29" }, { t: "ayrıl", n: "death" }] },
+        step29: { char: "Kahraman", text: "Seni korumak için her şeyi yaparım. ama senin iyliğin için sebepsiz ayrılmamız gerek.", opts: [{ t: "vazgeçme", n: "step30" },{ t: "vazgeç", n: "death" }] },
+        step30: { char: "Zehra", text: "'Neler olduğunu anlatacaksın Kahraman!' Onu köşeye sıkıştırdın.", opts: [{ t: "Dinle", n: "step31" }] },
+        step31: { char: "Kahraman", text: "Bak ailevi sorunlar çıktı ama yanılmışım! ", opts: [{ t: "Dinle", n: "step32" }] },
+        step32: { char: "Kahraman", text: "Özür dilerim. Seni kaybetmekten korktum ama yanılmışım. Beni affedebilir misin?", opts: [{ t: "Affet ❤️", n: "happy" }, { t: "Reddet", n: "death" }] },
         happy: { win: true }
     };
 
     let typingTimer, isTyping = false, currentText = "";
     
-    // MÜZİK SİSTEMİ (ORİJİNAL, KESİNTİSİZ)
     const bgMusic = new Audio('muzik.mp3');
     bgMusic.loop = true;
     bgMusic.volume = 0.3;
 
-    // Etkileşim olduğu an müziği başlat
     window.addEventListener('mousedown', () => { bgMusic.play().catch(()=>{}); }, {once:true});
     window.addEventListener('touchstart', () => { bgMusic.play().catch(()=>{}); }, {once:true});
 
@@ -196,7 +194,6 @@
         setTimeout(() => container.classList.remove('shake-effect'), 500);
     }
 
-    // YENİLENME MANTIĞI (ORİJİNAL, Müziği kesmez)
     function resetGame() {
         document.getElementById('death-screen').style.display = 'none';
         document.getElementById('win-screen').style.display = 'none';
