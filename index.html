@@ -49,16 +49,15 @@
         }
 
         #char-name { color: #ff4b2b; font-size: 1.2em; font-weight: bold; margin-bottom: 5px; }
-       #main-text { 
-    font-size: 1em; 
-    line-height: 1.4; 
-    color: #ddd; 
-    flex: 1; 
-    min-height: 60px;
-    display: inline-block; 
-    white-space: pre-wrap; 
-    word-wrap: break-word; 
-}
+        #main-text { 
+            font-size: 1em; 
+            line-height: 1.4; 
+            color: #ddd; 
+            flex: 1; 
+            min-height: 60px;
+            white-space: pre-wrap; /* Boşluklar korunsun diye ekledim */
+        }
+
         .choices { display: flex; gap: 10px; margin-top: 15px; }
 
         button {
@@ -130,11 +129,12 @@
 
 
     let typingTimer;
+    let isTyping = false; // Yazma durumunu takip için ekledim
 
 
     function playTypeSound() {
         const sound = new Audio('daktilo.mp3');
-        sound.volume = 0.4; // Ses biraz daha kısık, kafa yormasın
+        sound.volume = 0.4;
         sound.play().catch(() => {});
         sound.onended = function() { this.remove(); };
     }
@@ -165,22 +165,31 @@
         clearTimeout(typingTimer);
         
         let i = 0;
+        isTyping = true; // Yazma başladı
+
+        // Ekrana dokunma olayı
+        document.getElementById('game-container').onclick = function() {
+            if (isTyping) {
+                clearTimeout(typingTimer); // Yazmayı durdur
+                textElement.innerText = s.text; // Metni tamamla
+                optCont.style.display = "flex"; // Seçenekleri aç
+                isTyping = false; // Yazma bitti
+            }
+        };
+
         function typeWriter() {
             if (i < s.text.length) {
                 textElement.innerText += s.text.charAt(i);
                 
-
-                // KESİN ÇÖZÜM: Hem boşlukta çalmaz, hem de her 2 harften birinde çalar (ritim için)
                 if (s.text.charAt(i) !== " " && i % 2 === 0) {
                     playTypeSound();
                 }
 
-
                 i++;
-                // Yazma hızı 100ms oldu, daktilo gibi tane tane yazar.
                 typingTimer = setTimeout(typeWriter, 100);
             } else {
                 optCont.style.display = "flex";
+                isTyping = false; // Normal bitti
             }
         }
         typeWriter();
@@ -189,7 +198,10 @@
         (s.opts || []).forEach(o => {
             const b = document.createElement('button');
             b.innerText = o.t;
-            b.onclick = () => render(o.n);
+            b.onclick = (e) => { 
+                e.stopPropagation(); // Butona basınca ekrana tıklama sayılmasın
+                render(o.n); 
+            };
             optCont.appendChild(b);
         });
     }
