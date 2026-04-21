@@ -22,7 +22,6 @@
             padding-bottom: env(safe-area-inset-bottom);
         }
 
-        /* GİRİŞ EKRANI DÜZENLEME */
         #start-overlay {
             background: #000; z-index: 200; position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -34,23 +33,23 @@
             width: 180px; height: 180px; border-radius: 50%;
             border: 4px dashed #ff4b2b; overflow: hidden;
             display: flex; justify-content: center; 
-            align-items: flex-start; /* FOTOĞRAFI YUKARIDAN BAŞLATARAK KAFASINI GÖSTERİR */
+            align-items: flex-start;
             background: #111;
         }
 
         #drop-zehra img { 
             width: 100%; height: auto; 
             object-fit: cover;
-            margin-top: 5px; /* KAFASINI BİRAZ DAHA AŞAĞI ÇEKER */
+            margin-top: 5px;
         }
 
         #drag-cicek {
             width: 100px; height: 100px; 
             cursor: grab;
-            position: relative; /* Sürükleme takibi için */
+            position: relative;
             z-index: 210;
-            transition: transform 0.1s ease;
-            touch-action: none; /* Mobil kaydırmayı engeller, sadece sürüklemeye odaklanır */
+            touch-action: none; /* Sürükleme sırasında sayfanın kaymasını engeller */
+            will-change: transform; /* Performans için */
         }
 
         #overlay-instruction { font-size: 1.1em; color: #ff4b2b; animation: breathe 3s ease-in-out infinite; }
@@ -193,32 +192,15 @@
     });
 
 
-    // --- GELİŞTİRİLMİŞ DRAG & DROP ---
+    // --- CANLI SÜRÜKLEME SİMÜLASYONU ---
     const cicek = document.getElementById('drag-cicek');
     const zehraTarget = document.getElementById('drop-zehra');
 
-    // Masaüstü
-    cicek.addEventListener('dragstart', (e) => {
-        cicek.style.opacity = "0.5";
-    });
-
-    cicek.addEventListener('dragend', (e) => {
-        cicek.style.opacity = "1";
-    });
-
-    zehraTarget.addEventListener('dragover', (e) => e.preventDefault());
-
-    zehraTarget.addEventListener('drop', (e) => {
-        e.preventDefault();
-        startGame();
-    });
-
-    // Mobil Sürükleme Gözüksün Diye Güncelleme
     let active = false;
-    let currentX;
-    let currentY;
-    let initialX;
-    let initialY;
+    let currentX = 0;
+    let currentY = 0;
+    let initialX = 0;
+    let initialY = 0;
     let xOffset = 0;
     let yOffset = 0;
 
@@ -226,13 +208,25 @@
     cicek.addEventListener("touchend", dragEnd, false);
     cicek.addEventListener("touchmove", drag, false);
 
+    // Mause ile sürükleme desteği (Masaüstü için de görsel takip)
+    cicek.addEventListener("mousedown", dragStart, false);
+    window.addEventListener("mouseup", dragEnd, false);
+    window.addEventListener("mousemove", drag, false);
+
     function dragStart(e) {
-        initialX = e.touches[0].clientX - xOffset;
-        initialY = e.touches[0].clientY - yOffset;
+        if (e.type === "touchstart") {
+            initialX = e.touches[0].clientX - xOffset;
+            initialY = e.touches[0].clientY - yOffset;
+        } else {
+            initialX = e.clientX - xOffset;
+            initialY = e.clientY - yOffset;
+        }
         if (e.target === cicek) active = true;
     }
 
-    function dragEnd(e) {
+    function dragEnd() {
+        if (!active) return;
+        
         initialX = currentX;
         initialY = currentY;
         active = false;
@@ -240,7 +234,7 @@
         const zehraRect = zehraTarget.getBoundingClientRect();
         const cicekRect = cicek.getBoundingClientRect();
 
-        // Kapsama alanı kontrolü
+        // Hedefe değiyor mu?
         if (
             cicekRect.left < zehraRect.right &&
             cicekRect.right > zehraRect.left &&
@@ -249,26 +243,31 @@
         ) {
             startGame();
         } else {
-            // Başarısızsa geri sar
+            // Başarısızsa çiçeği fırlatıldığı yere geri gönder
             xOffset = 0;
             yOffset = 0;
+            cicek.style.transition = "transform 0.3s ease-out";
             cicek.style.transform = "translate3d(0, 0, 0)";
+            setTimeout(() => { cicek.style.transition = "none"; }, 300);
         }
     }
 
     function drag(e) {
         if (active) {
             e.preventDefault();
-            currentX = e.touches[0].clientX - initialX;
-            currentY = e.touches[0].clientY - initialY;
+            
+            if (e.type === "touchmove") {
+                currentX = e.touches[0].clientX - initialX;
+                currentY = e.touches[0].clientY - initialY;
+            } else {
+                currentX = e.clientX - initialX;
+                currentY = e.clientY - initialY;
+            }
+
             xOffset = currentX;
             yOffset = currentY;
-            setTranslate(currentX, currentY, cicek);
+            cicek.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
         }
-    }
-
-    function setTranslate(xPos, yPos, el) {
-        el.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
     }
 
 
