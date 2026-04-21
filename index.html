@@ -125,11 +125,26 @@
         optCont.style.display = "none";
         clearTimeout(typingTimer);
         let i = 0;
-        function typeWriter() {
-            if (i < s.text.length) {
-                textElement.innerText += s.text.charAt(i);
-                i++;
-                // Sadece bu 3 satırı i++; altına ekle
+        
+       function typeWriter() {
+    if (i < s.text.length) {
+        textElement.innerText += s.text.charAt(i);
+        
+        // SES KOMUTUNU ŞU ŞEKİLDE GÜNCELLE:
+        const sfx = document.getElementById('type-sound');
+        if (sfx) {
+            sfx.pause();          // Varsa önceki çalmayı durdur
+            sfx.currentTime = 0;  // Sesi saniyenin başına çek
+            sfx.play().catch(() => {}); // Yeniden oynat
+        }
+
+        i++;
+        typingTimer = setTimeout(typeWriter, 40); // Hızı 30'dan 40'a çektik, ses yetişsin diye
+    } else {
+        optCont.style.display = "flex";
+    }
+}
+        
 const sfx = document.getElementById('type-sound');
 sfx.currentTime = 0;
 sfx.play().catch(() => {});
