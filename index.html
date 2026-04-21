@@ -73,6 +73,7 @@
 </head>
 <body>
 
+
 <div id="game-container">
     <div id="death-screen" class="fullscreen-overlay">
         <h1>ZEHRA SENİ YEDİ</h1>
@@ -96,6 +97,7 @@
     </div>
 </div>
 
+
 <script>
     const imgs = { 
         "Ayşe": "ayse.png", 
@@ -103,6 +105,7 @@
         "Kahraman": "kahraman.png" 
     };
     
+
     const data = {
         start: { char: "Ayşe", text: "Zehra... Seni Kahraman'la rüyamda gördüm. Bir çocuğunuz vardı ve çok mutluydunuz Bence ona bir şans ver.", opts: [{ t: "Kabul Et", n: "death" }, { t: "Ayşe'yi Süründür", n: "step2" }] },
         death: { death: true },
@@ -117,13 +120,16 @@
         happy: { win: true }
     };
 
+
     let typingTimer;
 
-    // Ses havuzu oluşturarak daktilo sesinin takılmamasını sağlar
+
     function playTypeSound() {
-        const audio = new Audio('daktilo.mp3');
-        audio.play().catch(() => {});
+        const sound = new Audio('daktilo.mp3');
+        sound.play().catch(() => {});
+        sound.onended = function() { this.remove(); };
     }
+
 
     function render(key) {
         const s = data[key];
@@ -154,11 +160,14 @@
             if (i < s.text.length) {
                 textElement.innerText += s.text.charAt(i);
                 
-                // HER HARFTE SES ÇALMA
-                playTypeSound();
+
+                if (s.text.charAt(i) !== " ") {
+                    playTypeSound();
+                }
+
 
                 i++;
-                typingTimer = setTimeout(typeWriter, 50);
+                typingTimer = setTimeout(typeWriter, 60);
             } else {
                 optCont.style.display = "flex";
             }
@@ -174,10 +183,12 @@
         });
     }
 
-    // Oyunun başlatılması
+
     window.onload = function() {
         render('start');
     };
+
+
 </script>
 </body>
 </html>
