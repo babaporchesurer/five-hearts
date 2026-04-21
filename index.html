@@ -6,12 +6,14 @@
     <title>Five Hearts: Karanlık Şehir</title>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
         body, html {
             background: #000; color: #fff;
             font-family: 'Courier New', monospace;
             margin: 0; padding: 0; overflow: hidden;
             width: 100%; height: 100vh; height: 100dvh;
         }
+
         #game-container {
             width: 100%; height: 100vh; height: 100dvh;
             background: url('sehir.jpg') no-repeat center bottom;
@@ -19,50 +21,57 @@
             justify-content: flex-end; position: relative;
             padding-bottom: env(safe-area-inset-bottom);
         }
+
         #visual-area { flex: 1; position: relative; overflow: hidden; touch-action: none; }
+
         #char-frame {
             position: absolute; bottom: 10px; left: 20px; width: 100px; height: 140px;
             border-left: 4px solid #ff4b2b;
             background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
             display: none; justify-content: center; align-items: flex-end; z-index: 10;
         }
+
         #char-img {
             height: 90%; width: auto; object-fit: contain;
-            /* Karakter nefes alma animasyonu */
             animation: breathe 3s ease-in-out infinite;
         }
+
         @keyframes breathe {
             0% { transform: scale(1); }
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
+
         #dialogue-box {
             background: linear-gradient(to top, #000 80%, rgba(0,0,0,0.8));
             border-top: 2px solid rgba(255,75,43,0.5); padding: 20px;
             min-height: 180px; z-index: 15; display: flex; flex-direction: column;
         }
+
         #char-name { color: #ff4b2b; font-size: 1.2em; font-weight: bold; margin-bottom: 5px; }
         #main-text { font-size: 1em; line-height: 1.4; color: #ddd; flex: 1; min-height: 60px; }
+
         .choices { display: flex; gap: 10px; margin-top: 15px; }
+
         button {
             background: transparent; color: #fff; border: 1px solid #ff4b2b;
             padding: 12px; cursor: pointer; flex: 1;
             font-family: 'Courier New', monospace; font-size: 0.9em;
         }
+
         .fullscreen-overlay {
             background: #000; z-index: 100; display: none; position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             justify-content: center; align-items: center; flex-direction: column;
         }
+
         #death-screen { color: #ff0000; }
+        #win-screen { color: #fff; }
+
         @keyframes beat { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
-
-<audio id="type-sound" preload="auto">
-    <source src="daktilo.mp3" type="audio/mpeg">
-</audio>
 
 <div id="game-container">
     <div id="death-screen" class="fullscreen-overlay">
@@ -88,9 +97,12 @@
 </div>
 
 <script>
-    const imgs = { "Ayşe": "ayse.png", "Zehra": "zehra.png", "Kahraman": "kahraman.png" };
+    const imgs = { 
+        "Ayşe": "ayse.png", 
+        "Zehra": "zehra.png", 
+        "Kahraman": "kahraman.png" 
+    };
     
-    // Hikaye akışın (dokunulmadı)
     const data = {
         start: { char: "Ayşe", text: "Zehra... Seni Kahraman'la rüyamda gördüm. Bir çocuğunuz vardı ve çok mutluydunuz Bence ona bir şans ver.", opts: [{ t: "Kabul Et", n: "death" }, { t: "Ayşe'yi Süründür", n: "step2" }] },
         death: { death: true },
@@ -107,13 +119,21 @@
 
     let typingTimer;
 
+    // Ses havuzu oluşturarak daktilo sesinin takılmamasını sağlar
+    function playTypeSound() {
+        const audio = new Audio('daktilo.mp3');
+        audio.play().catch(() => {});
+    }
+
     function render(key) {
         const s = data[key];
+        
         if (s.death) { document.getElementById('death-screen').style.display = 'flex'; return; }
         if (s.win) { document.getElementById('win-screen').style.display = 'flex'; return; }
 
         const img = document.getElementById('char-img');
         const frame = document.getElementById('char-frame');
+        
         if (imgs[s.char]) {
             img.src = imgs[s.char];
             frame.style.display = 'flex';
@@ -125,27 +145,20 @@
         const textElement = document.getElementById('main-text');
         const optCont = document.getElementById('options');
 
-        // Daktilo efekti ve ses yönetimi
         textElement.innerText = "";
         optCont.style.display = "none";
         clearTimeout(typingTimer);
+        
         let i = 0;
-
         function typeWriter() {
             if (i < s.text.length) {
                 textElement.innerText += s.text.charAt(i);
                 
-                // Her harfte sesi sıfırlayıp tekrar oynatıyoruz
-                const sfx = document.getElementById('type-sound');
-                if (sfx) {
-                    sfx.pause();
-                    sfx.currentTime = 0;
-                    sfx.play().catch(() => {}); 
-                }
+                // HER HARFTE SES ÇALMA
+                playTypeSound();
 
                 i++;
-                // Sesin yetişmesi için hızı 40ms yaptık
-                typingTimer = setTimeout(typeWriter, 40);
+                typingTimer = setTimeout(typeWriter, 50);
             } else {
                 optCont.style.display = "flex";
             }
@@ -161,7 +174,7 @@
         });
     }
 
-    // Oyun başlangıcı
+    // Oyunun başlatılması
     window.onload = function() {
         render('start');
     };
