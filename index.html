@@ -66,7 +66,6 @@
             transition: all 0.3s ease;
         }
 
-        .char-focus { filter: drop-shadow(0 0 10px #ff4b2b) brightness(1.2); transform: scale(1.1); }
         #char-img { height: 90%; width: auto; object-fit: contain; animation: breathe 3s ease-in-out infinite; }
 
         @keyframes breathe { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
@@ -110,13 +109,13 @@
 <div id="game-container">
     <div id="death-screen" class="fullscreen-overlay">
         <h1>ZEHRA SENİ YEDİ</h1>
-        <button onclick="resetGame()" style="max-width: 140px; padding: 40px; font-size: 0.75em; margin-top: 15px; line-height: 40px;">TEKRAR DENE</button>
+        <button onclick="resetGame()" style="width: 140px; height: 40px; padding: 0; font-size: 0.75em; margin-top: 15px; line-height: 40px;">TEKRAR DENE</button>
     </div>
 
     <div id="win-screen" class="fullscreen-overlay">
         <h1>MUTLU SON</h1>
         <p style="color: #ff4b2b; animation: beat 1s infinite;">beni affet ❤️</p>
-        <button onclick="resetGame()" style="max-width: 140px; padding: 40px; font-size: 0.75em; margin-top: 15px line-height: 40px;;">BAŞTAN</button>
+        <button onclick="resetGame()" style="width: 140px; height: 40px; padding: 0; font-size: 0.75em; margin-top: 25px; line-height: 40px;">BAŞTAN</button>
     </div>
 
     <div id="visual-area"><div id="char-frame"><img id="char-img" src="" alt=""></div></div>
@@ -134,41 +133,40 @@
         start: { char: "Ayşe", text: "Zehra... Seni Kahraman'la rüyamda gördüm. Bir çocuğunuz vardı ve çok mutluydunuz Bence ona bir şans ver.", opts: [{ t: "Kabul Et", n: "death" }, { t: "Ayşe'yi Süründür", n: "step2" }] },
         death: { death: true },
         step2: { char: "Zehra", text: "Madem bu kadar eminsin, istek atarsa bakarız... (O akşam...)", opts: [{ t: "Mesajı Oku", n: "step3" }] },
-        step3: { char: "Zehra", text: "mesajı okur 'artık benimsin geçmiş olsun(kahraman söyler) ' .", opts: [{ t: "süründür", n: "step4" }, { t: "kabul et", n: "death" }] },
-        step4: { char: "Zehra", text: "mesaj yazar ya 'PUHAHAHAHAHA' .", opts: [{ t: "Onun ol", n: "step5" }] },
-        step5: { char: "Kahraman", text: " biz bu kızla nasıl görüntülü konuşsak  .", opts: [{ t: "gizlice dinle", n: "step6" }] },
-        step6: { char: "Kahraman", text: "ayşe ile konuşmam lazım .", opts: [{ t: "dinlemeye devam et", n: "step7" }] },
-        step7: { char: "Ayse", text: "ALO' .", opts: [{ t: "hmm nolcak acaaba", n: "step8" }] },
-        step8: { char: "Kahraman", text: "alo.", opts: [{ t: "dinlemeye devam ", n: "step9" }] },
-        step9: { char: "Kahraman", text: "sana işim düştü .", opts: [{ t: "...", n: "step10" }] },
-        step10: { char: "Ayse", text: "HAYIRDIR!!!! .", opts: [{ t: "...", n: "step11" }] },
-        step11: { char: "Kahraman", text: "beni zehrayla görüntülü konuşturman lazım.", opts: [{ t: "...", n: "step12" }] },
-        step12: { char: "Ayse", text: "ben hallederim sıkma canını", opts: [{ t: "...", n: "step13" }] },
-        step13: { char: "Kahraman", text: "sana güveniyorumm", opts: [{ t: "yarına geç", n: "step14" }] },
-        step14: { char: "anybody", text: "ayşeyle zehra okulda buluşurlar .", opts: [{ t: "kahramanı ara", n: "step15" }] },
-        step15: { char: "Zehra", text: "hadi kahramanı arayalımm", opts: [{ t: "ara", n: "step16" }] },
-        step16: { char: "Ayse", text: "hadi arayalım", opts: [{ t: "arama başlatır", n: "step17" }] },
-        step17: { char: "anybody", text: "kahramanı ararlar", opts: [{ t: "alo", n: "step18" }, { t: "yüzüne kapat", n: "death" }] },
-        step18: { char: "Zehra", text: "aloooo", opts: [{ t: "...", n: "step19" }] },
-        step19: { char: "Kahraman", text: "aloo", opts: [{ t: "dinle", n: "step20" }] },
-        step20: { char: "Kahraman", text: "ayşe bana bir sözün vardıı vakti geldi sanki", opts: [{ t: "şaşırmış gibi yap", n: "step21" }, { t: "zaten bildiğini söyle", n: "death" }] },
-        step21: { char: "Zehra", text: "ne sözü ayşe ", opts: [{ t: "?", n: "step22" }] },
-        step22: { char: "Ayşe", text: "görüntülü arayacağım", opts: [{ t: "süründür(kahramanı)", n: "step23" }, { t: "kabul et", n: "death" }] },
-        step23: { char: "Zehra", text: "HAYIR ÇİNGENLERE BENZİORUM AMK .", opts: [{ t: "kolpa kadınsın", n: "step24" }] },
-        step24: { char: "Kahraman", text: "HAYIR ben seni her halinle seviyoum ve arıyorum beklee", opts: [{ t: "ARAMA", n: "step25" }, { t: "ARA", n: "death" }] },
-        step25: { char: "Zehra", text: "İNTERNETİM YOK (BAHANE)", opts: [{ t: "üzüldü kahraman", n: "step26" }] },
-        step26: { char: "Kahraman", text: "öyle olsun", opts: [{ t: "...", n: "step27" }] },
+        step3: { char: "Zehra", text: "Mesajı okur 'Artık benimsin geçmiş olsun.'", opts: [{ t: "Süründür", n: "step4" }, { t: "Kabul Et", n: "death" }] },
+        step4: { char: "Zehra", text: "Mesaj yazar: 'PUHAHAHAHAHA' .", opts: [{ t: "Onun ol", n: "step5" }] },
+        step5: { char: "Kahraman", text: "Biz bu kızla nasıl görüntülü konuşsak?", opts: [{ t: "Gizlice dinle", n: "step6" }] },
+        step6: { char: "Kahraman", text: "Ayşe ile konuşmam lazım.", opts: [{ t: "Dinlemeye devam et", n: "step7" }] },
+        step7: { char: "Ayse", text: "ALO!", opts: [{ t: "Hmm ne olacak acaba?", n: "step8" }] },
+        step8: { char: "Kahraman", text: "Alo.", opts: [{ t: "Dinlemeye devam", n: "step9" }] },
+        step9: { char: "Kahraman", text: "Sana işim düştü.", opts: [{ t: "...", n: "step10" }] },
+        step10: { char: "Ayse", text: "HAYIRDIR!!!!", opts: [{ t: "...", n: "step11" }] },
+        step11: { char: "Kahraman", text: "Beni Zehra'yla görüntülü konuşturman lazım.", opts: [{ t: "...", n: "step12" }] },
+        step12: { char: "Ayse", text: "Ben hallederim sıkma canını.", opts: [{ t: "...", n: "step13" }] },
+        step13: { char: "Kahraman", text: "Sana güveniyorum.", opts: [{ t: "Yarına geç", n: "step14" }] },
+        step14: { char: "anybody", text: "Ayşe'yle Zehra okulda buluşurlar.", opts: [{ t: "Kahraman'ı ara", n: "step15" }] },
+        step15: { char: "Zehra", text: "Hadi Kahraman'ı arayalım.", opts: [{ t: "Ara", n: "step16" }] },
+        step16: { char: "Ayse", text: "Hadi arayalım.", opts: [{ t: "Arama başlatır", n: "step17" }] },
+        step17: { char: "anybody", text: "Kahraman'ı ararlar.", opts: [{ t: "Alo", n: "step18" }, { t: "Yüzüne kapat", n: "death" }] },
+        step18: { char: "Zehra", text: "Aloooo", opts: [{ t: "...", n: "step19" }] },
+        step19: { char: "Kahraman", text: "Alo", opts: [{ t: "Dinle", n: "step20" }] },
+        step20: { char: "Kahraman", text: "Ayşe bana bir sözün vardı, vakti geldi sanki.", opts: [{ t: "Şaşırmış gibi yap", n: "step21" }, { t: "Zaten bildiğini söyle", n: "death" }] },
+        step21: { char: "Zehra", text: "Ne sözü Ayşe?", opts: [{ t: "?", n: "step22" }] },
+        step22: { char: "Ayşe", text: "Görüntülü arayacağım.", opts: [{ t: "Süründür", n: "step23" }, { t: "Kabul et", n: "death" }] },
+        step23: { char: "Zehra", text: "HAYIR ÇİNGENLERE BENZİYORUM AMK.", opts: [{ t: "Kolpa kadınsın", n: "step24" }] },
+        step24: { char: "Kahraman", text: "HAYIR ben seni her halinle seviyorum ve arıyorum bekle.", opts: [{ t: "ARAMA", n: "step25" }, { t: "ARA", n: "death" }] },
+        step25: { char: "Zehra", text: "İNTERNETİM YOK (BAHANE)", opts: [{ t: "Üzüldü Kahraman", n: "step26" }] },
+        step26: { char: "Kahraman", text: "Öyle olsun.", opts: [{ t: "...", n: "step27" }] },
         step27: { char: "ANYBODY", text: "SONRAKİ AKŞAM", opts: [{ t: "...", n: "step28" }] },
-        step28: { char: "Kahraman", text: "zehra üzgünüm ama sebepsiz ayrılmamız lazım", opts: [{ t: "neden amk", n: "step29" }, { t: "ayrıl", n: "death" }] },
-        step29: { char: "Kahraman", text: "Seni korumak için her şeyi yaparım. ama senin iyliğin için sebepsiz ayrılmamız gerek.", opts: [{ t: "vazgeçme", n: "step30" },{ t: "vazgeç", n: "death" }] },
+        step28: { char: "Kahraman", text: "Zehra üzgünüm ama sebepsiz ayrılmamız lazım.", opts: [{ t: "Neden?", n: "step29" }, { t: "Ayrıl", n: "death" }] },
+        step29: { char: "Kahraman", text: "Seni korumak için her şeyi yaparım. Ama senin iyiliğin için sebepsiz ayrılmamız gerek.", opts: [{ t: "Vazgeçme", n: "step30" },{ t: "Vazgeç", n: "death" }] },
         step30: { char: "Zehra", text: "'Neler olduğunu anlatacaksın Kahraman!' Onu köşeye sıkıştırdın.", opts: [{ t: "Dinle", n: "step31" }] },
         step31: { char: "Kahraman", text: "Bak ailevi sorunlar çıktı ama yanılmışım! ", opts: [{ t: "Dinle", n: "step32" }] },
-        step32: { char: "Kahraman", text: "Özür dilerim. Seni kaybetmekten korktum ama yanılmışım. Beni affedebilir misin?", opts: [{ t: "Affet ❤️", n: "happy" }, { t: "Reddet", n: "death" }] },
+        step32: { char: "Kahraman", text: "Özür dilerim. Seni kaybetmekten korktum. Beni affedebilir misin?", opts: [{ t: "Affet ❤️", n: "happy" }, { t: "Reddet", n: "death" }] },
         happy: { win: true }
     };
 
     let typingTimer, isTyping = false, currentText = "";
-    
     const bgMusic = new Audio('muzik.mp3');
     bgMusic.loop = true;
     bgMusic.volume = 0.3;
@@ -265,13 +263,13 @@
 
         if (charLower === "anybody" || !imgs[s.char]) {
             frame.style.display = 'none';
+            document.getElementById('char-name').innerText = "";
         } else {
             document.getElementById('char-img').src = imgs[s.char];
             frame.style.display = 'flex';
-            frame.classList.add('char-focus');
+            document.getElementById('char-name').innerText = s.char;
         }
 
-        document.getElementById('char-name').innerText = (charLower === "anybody") ? "" : s.char;
         const textElement = document.getElementById('main-text');
         const optCont = document.getElementById('options');
         textElement.innerText = ""; optCont.style.display = "none";
@@ -282,7 +280,7 @@
             if (i < s.text.length) {
                 textElement.innerText += s.text.charAt(i);
                 if (s.text.charAt(i) !== " " && i % 2 === 0) playTypeSound();
-                i++; typingTimer = setTimeout(typeWriter, 100);
+                i++; typingTimer = setTimeout(typeWriter, 80);
             } else { optCont.style.display = "flex"; isTyping = false; }
         }
         typeWriter();
