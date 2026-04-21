@@ -22,6 +22,29 @@
             padding-bottom: env(safe-area-inset-bottom);
         }
 
+        /* YENİ GİRİŞ EKRANI (DRAG & DROP) STİLLERİ */
+        #start-overlay {
+            background: #000; z-index: 200; position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            gap: 20px; text-align: center; color: #fff;
+        }
+
+        #drag-cicek {
+            width: 80px; height: 80px; cursor: grab;
+            transition: transform 0.2s;
+        }
+
+        #drop-zehra {
+            width: 150px; height: 150px; border-radius: 50%;
+            border: 4px dashed #ff4b2b; overflow: hidden;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        #drop-zehra img { width: 100%; height: 100%; object-fit: cover; }
+
+        #overlay-instruction { font-size: 1.1em; color: #ff4b2b; animation: breathe 3s ease-in-out infinite; }
+
         #visual-area { flex: 1; position: relative; overflow: hidden; touch-action: none; }
 
         #char-frame {
@@ -80,6 +103,14 @@
 </head>
 <body>
 
+<div id="start-overlay">
+    <div id="drop-zehra">
+        <img src="zehra.png" alt="Zehra">
+    </div>
+    <div id="overlay-instruction">başlamak için çiçeği zehra'ya sürükle</div>
+    <img src="cicek.png" id="drag-cicek" alt="Çiçek" draggable="true">
+</div>
+
 
 <div id="game-container">
     <div id="death-screen" class="fullscreen-overlay">
@@ -130,7 +161,7 @@
 
     let typingTimer;
     let isTyping = false;
-    let currentText = ""; // Geçiş için yardımcı değişken
+    let currentText = "";
 
 
     function playTypeSound() {
@@ -141,7 +172,6 @@
     }
 
 
-    // TIKLAMA OLAYINI RENDER DIŞINA ALDIM (ÇALIŞMAMA SEBEBİ BUYDU)
     document.getElementById('game-container').addEventListener('click', function() {
         if (isTyping) {
             clearTimeout(typingTimer);
@@ -150,6 +180,79 @@
             isTyping = false;
         }
     });
+
+
+    // YENİ: DRAG & DROP MANTIĞI
+    const cicek = document.getElementById('drag-cicek');
+    const zehraTarget = document.getElementById('drop-zehra');
+
+    // Masaüstü için Drag & Drop
+    cicek.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('text', 'flower');
+        cicek.style.transform = "scale(0.8)";
+    });
+
+    zehraTarget.addEventListener('dragover', (e) => {
+        e.preventDefault(); // Sürüklemeyi engelleme
+    });
+
+    zehraTarget.addEventListener('drop', (e) => {
+        e.preventDefault();
+        const data = e.dataTransfer.getData('text');
+        if (data === 'flower') {
+            startGame();
+        }
+    });
+
+    // Mobil (Dokunmatik) için Drag & Drop simülasyonu
+    let initialX, initialY, xOffset = 0, yOffset = 0;
+    
+    cicek.addEventListener('touchstart', dragStart, false);
+    cicek.addEventListener('touchend', dragEnd, false);
+    cicek.addEventListener('touchmove', drag, false);
+
+    function dragStart(e) {
+        initialX = e.touches[0].clientX - xOffset;
+        initialY = e.touches[0].clientY - yOffset;
+    }
+
+    function dragEnd(e) {
+        initialX = currentX;
+        initialY = currentY;
+
+        // Çiçeğin Zehra'nın üstüne bırakılıp bırakılmadığını kontrol et
+        const zehraRect = zehraTarget.getBoundingClientRect();
+        const cicekRect = cicek.getBoundingClientRect();
+
+        if (
+            cicekRect.left >= zehraRect.left &&
+            cicekRect.right <= zehraRect.right &&
+            cicekRect.top >= zehraRect.top &&
+            cicekRect.bottom <= zehraRect.bottom
+        ) {
+            startGame();
+        } else {
+            // Hedefe gelmediyse çiçeği yerine geri döndür
+            cicek.style.transform = "translate3d(0, 0, 0)";
+            xOffset = 0;
+            yOffset = 0;
+        }
+    }
+
+    function drag(e) {
+        e.preventDefault();
+        currentX = e.touches[0].clientX - initialX;
+        currentY = e.touches[0].clientY - initialY;
+        xOffset = currentX;
+        yOffset = currentY;
+        cicek.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+    }
+
+
+    function startGame() {
+        document.getElementById('start-overlay').style.display = 'none';
+        render('start');
+    }
 
 
     function render(key) {
@@ -176,7 +279,7 @@
         optCont.style.display = "none";
         clearTimeout(typingTimer);
         
-        currentText = s.text; // Tıklama için güncel metni kaydet
+        currentText = s.text;
         let i = 0;
         isTyping = true;
 
@@ -208,12 +311,6 @@
             optCont.appendChild(b);
         });
     }
-
-
-    window.onload = function() {
-        render('start');
-    };
-
 
 </script>
 </body>
