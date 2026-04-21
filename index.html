@@ -87,16 +87,17 @@
             font-family: 'Courier New', monospace; font-size: 0.9em;
         }
 
-        /* YENİ: KISALTILMIŞ İNCE DİKDÖRTGEN BUTON */
+        /* DÜZELTİLMİŞ YATAY İNCE BUTON */
         .rect-btn {
-            max-width: 120px !important; /* Genişlik biraz daha kısaltıldı */
-            height: 32px !important;    /* İnce olması için yükseklik düşürüldü */
-            padding: 0 !important;
-            display: flex !important;
+            display: inline-flex !important; /* Uzamasını engeller */
+            width: 130px !important;         /* Genişlik sabitlendi */
+            height: 38px !important;         /* Yükseklik kısaltıldı */
+            flex: none !important;           /* Flexbox'ın boyunu bozmasını engeller */
             align-items: center !important;
             justify-content: center !important;
-            font-size: 0.7em !important;
-            margin-top: 20px;
+            font-size: 0.75em !important;
+            margin-top: 20px !important;
+            padding: 0 !important;
         }
 
         .fullscreen-overlay {
