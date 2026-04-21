@@ -57,7 +57,9 @@
         @keyframes beat { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
     </style>
 </head>
-<body>
+    <audio id="type-sound">
+  <source src="daktilo.mp3" type="audio/mpeg">
+</audio>
 
 <div id="game-container">
     <div id="death-screen" class="fullscreen-overlay">
@@ -127,6 +129,10 @@
             if (i < s.text.length) {
                 textElement.innerText += s.text.charAt(i);
                 i++;
+                // Sadece bu 3 satırı i++; altına ekle
+const sfx = document.getElementById('type-sound');
+sfx.currentTime = 0;
+sfx.play().catch(() => {});
                 typingTimer = setTimeout(typeWriter, 30);
             } else {
                 optCont.style.display = "flex";
