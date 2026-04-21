@@ -6,95 +6,73 @@
     <title>Five Hearts: Karanlık Şehir</title>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
-        body, html { 
-            background: #000; color: #fff; 
-            font-family: 'Courier New', monospace; 
-            margin: 0; padding: 0;
-            overflow: hidden; /* Kaydırmayı tamamen engeller */
-            width: 100%; 
-            /* iOS Safari için dinamik yükseklik ayarı */
-            height: 100vh;
-            height: 100dvh; 
+        body, html {
+            background: #000; color: #fff;
+            font-family: 'Courier New', monospace;
+            margin: 0; padding: 0; overflow: hidden;
+            width: 100%; height: 100vh; height: 100dvh;
         }
-
-        #game-container { 
-            width: 100%; 
-            height: 100vh;
-            height: 100dvh; 
+        #game-container {
+            width: 100%; height: 100vh; height: 100dvh;
             background: url('sehir.jpg') no-repeat center bottom;
-            background-size: cover;
-            display: flex; flex-direction: column; justify-content: flex-end;
-            position: relative;
-            /* iOS güvenli alan boşlukları */
+            background-size: cover; display: flex; flex-direction: column;
+            justify-content: flex-end; position: relative;
             padding-bottom: env(safe-area-inset-bottom);
         }
-
-        /* Ekranın kaymasını engelleyen katman */
-        #visual-area { 
-            flex: 1; position: relative; overflow: hidden; 
-            touch-action: none; /* iOS'ta sürükleyerek yenilemeyi (pull-to-refresh) kapatır */
-        }
-
-        /* Karakter Penceresi (iOS için yerleşim ayarı) */
+        #visual-area { flex: 1; position: relative; overflow: hidden; touch-action: none; }
         #char-frame {
-            position: absolute; bottom: 10px; left: 20px;
-            width: 100px; height: 140px;
+            position: absolute; bottom: 10px; left: 20px; width: 100px; height: 140px;
             border-left: 4px solid #ff4b2b;
             background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-            display: none; justify-content: center; align-items: flex-start;
-            z-index: 10; overflow: hidden;
+            display: none; justify-content: center; align-items: flex-end; z-index: 10;
         }
-
-        #char-img { height: 100%; width: auto; object-fit: contain; object-position: top; }
-
-        /* Diyalog Kutusu */
-        #dialogue-box { 
+        #char-img {
+            height: 90%; width: auto; object-fit: contain;
+            animation: breathe 3s ease-in-out infinite;
+        }
+        @keyframes breathe {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        #dialogue-box {
             background: linear-gradient(to top, #000 80%, rgba(0,0,0,0.8));
-            border-top: 2px solid rgba(255,75,43,0.5);
-            padding: 20px 20px;
-            min-height: 180px; z-index: 15;
-            display: flex; flex-direction: column;
+            border-top: 2px solid rgba(255,75,43,0.5); padding: 20px;
+            min-height: 180px; z-index: 15; display: flex; flex-direction: column;
         }
-
         #char-name { color: #ff4b2b; font-size: 1.2em; font-weight: bold; margin-bottom: 5px; }
-        #main-text { font-size: 1em; line-height: 1.4; color: #ddd; flex: 1; }
-
+        #main-text { font-size: 1em; line-height: 1.4; color: #ddd; flex: 1; min-height: 60px; }
         .choices { display: flex; gap: 10px; margin-top: 15px; }
-        button { 
-            background: transparent; color: #fff; border: 1px solid #ff4b2b; 
-            padding: 12px; cursor: pointer; flex: 1; font-family: 'Courier New', monospace;
-            font-size: 0.9em;
+        button {
+            background: transparent; color: #fff; border: 1px solid #ff4b2b;
+            padding: 12px; cursor: pointer; flex: 1;
+            font-family: 'Courier New', monospace; font-size: 0.9em;
         }
-
-        /* EKRANLARI ÜSTE SABİTLEME */
-        .fullscreen-overlay { 
-            background: #000; z-index: 100; display: none; position: absolute; 
-            top: 0; left: 0; width: 100%; height: 100%; 
+        .fullscreen-overlay {
+            background: #000; z-index: 100; display: none; position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
             justify-content: center; align-items: center; flex-direction: column;
         }
         #death-screen { color: #ff0000; }
-        #win-screen { color: #fff; background: #000; }
-
         @keyframes beat { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
     </style>
 </head>
-<body scroll="no"> <div id="game-container">
+<body>
+
+<div id="game-container">
     <div id="death-screen" class="fullscreen-overlay">
-        <h1 style="font-size: 2em;">ZEHRA SENİ YEDİ</h1>
+        <h1>ZEHRA SENİ YEDİ</h1>
         <button onclick="location.reload()" style="max-width: 200px; margin-top: 20px;">TEKRAR DENE</button>
     </div>
 
     <div id="win-screen" class="fullscreen-overlay">
-        <h1 style="font-size: 2em;">MUTLU SON</h1>
-        <p style="font-size: 1.5em; color: #ff4b2b; animation: beat 1s infinite;">beni affet ❤️</p>
+        <h1>MUTLU SON</h1>
+        <p style="color: #ff4b2b; animation: beat 1s infinite;">beni affet ❤️</p>
         <button onclick="location.reload()" style="max-width: 200px; margin-top: 30px;">BAŞTAN</button>
     </div>
 
     <div id="visual-area">
-        <div id="char-frame">
-            <img id="char-img" src="" alt="">
-        </div>
+        <div id="char-frame"><img id="char-img" src="" alt=""></div>
     </div>
 
     <div id="dialogue-box">
@@ -105,65 +83,70 @@
 </div>
 
 <script>
-    render('start');
     const imgs = { "Ayşe": "ayse.png", "Zehra": "zehra.png", "Kahraman": "kahraman.png" };
     const data = {
         start: { char: "Ayşe", text: "Zehra... Seni Kahraman'la rüyamda gördüm. Bir çocuğunuz vardı ve çok mutluydunuz Bence ona bir şans ver.", opts: [{ t: "Kabul Et", n: "death" }, { t: "Ayşe'yi Süründür", n: "step2" }] },
         death: { death: true },
         step2: { char: "Zehra", text: "Madem bu kadar eminsin, istek atarsa bakarız... (O akşam...)", opts: [{ t: "Mesajı Oku", n: "step3" }] },
         step3: { char: "Zehra", text: "mesajı okur 'artık benimsin geçmiş olsun(kahraman söyler) ' .", opts: [{ t: "süründür", n: "step4" }, { t: "kabul et", n: "death" }] },
-        step4: { char: "Zehra", text: "mesaj yazar ya 'PUHAHAHAHAHA' .", opts: [{ t: "Onun ol", n: "step5" }] }, 
+        step4: { char: "Zehra", text: "mesaj yazar ya 'PUHAHAHAHAHA' .", opts: [{ t: "Onun ol", n: "step5" }] },
         step5: { char: "Kahraman", text: "Zehra Seninle konuşmam gerek. .", opts: [{ t: "Onunla Git", n: "step6" }, { t: "Güvenme", n: "death" }] },
         step6: { char: "Kahraman", text: "Seni korumak için her şeyi yaparım. ama senin iyliğin için sebepsiz ayrılmamız gerek.", opts: [{ t: "vazgeçme", n: "step7" }] },
         step7: { char: "Zehra", text: "'Neler olduğunu anlatacaksın Kahraman!' Onu köşeye sıkıştırdın.", opts: [{ t: "Dinle", n: "step8" }] },
-        step8: { char: "Kahraman", text: "Bak ailevi sorunlar çıktı ama yanılmışım! ",  opts: [{ t: "Dinle", n: "step9" }] },
+        step8: { char: "Kahraman", text: "Bak ailevi sorunlar çıktı ama yanılmışım! ", opts: [{ t: "Dinle", n: "step9" }] },
         step9: { char: "Kahraman", text: "Özür dilerim. Seni kaybetmekten korktum ama yanılmışım. Beni affedebilir misin?", opts: [{ t: "Affet ❤️", n: "happy" }, { t: "Reddet", n: "death" }] },
         happy: { win: true }
+    };
 
-let typingTimer; 
+    let typingTimer;
 
-function render(key) { 
-    const s = data[key]; 
-    if (s.death) { document.getElementById('death-screen').style.display = 'flex'; return; } 
-    if (s.win) { document.getElementById('win-screen').style.display = 'flex'; return; }
+    function render(key) {
+        const s = data[key];
+        if (s.death) { document.getElementById('death-screen').style.display = 'flex'; return; }
+        if (s.win) { document.getElementById('win-screen').style.display = 'flex'; return; }
 
-    const img = document.getElementById('char-img'); 
-    const frame = document.getElementById('char-frame'); 
-    if (imgs[s.char]) { 
-        img.src = imgs[s.char]; 
-        frame.style.display = 'flex'; 
-    } else { 
-        frame.style.display = 'none'; 
+        const img = document.getElementById('char-img');
+        const frame = document.getElementById('char-frame');
+        if (imgs[s.char]) {
+            img.src = imgs[s.char];
+            frame.style.display = 'flex';
+        } else {
+            frame.style.display = 'none';
+        }
+
+        document.getElementById('char-name').innerText = s.char || "";
+        const textElement = document.getElementById('main-text');
+        const optCont = document.getElementById('options');
+
+        // Daktilo efekti
+        textElement.innerText = "";
+        optCont.style.display = "none";
+        clearTimeout(typingTimer);
+        let i = 0;
+        function typeWriter() {
+            if (i < s.text.length) {
+                textElement.innerText += s.text.charAt(i);
+                i++;
+                typingTimer = setTimeout(typeWriter, 30);
+            } else {
+                optCont.style.display = "flex";
+            }
+        }
+        typeWriter();
+
+        optCont.innerHTML = '';
+        (s.opts || []).forEach(o => {
+            const b = document.createElement('button');
+            b.innerText = o.t;
+            b.onclick = () => render(o.n);
+            optCont.appendChild(b);
+        });
     }
 
-    document.getElementById('char-name').innerText = s.char || ""; 
-    const textElement = document.getElementById('main-text'); 
-    const optCont = document.getElementById('options');
-
-    textElement.innerText = ""; 
-    optCont.style.display = "none"; 
-    clearTimeout(typingTimer);
-
-    let i = 0; 
-    function typeWriter() { 
-        if (i < s.text.length) { 
-            textElement.innerText += s.text.charAt(i); 
-            i++; 
-            typingTimer = setTimeout(typeWriter, 30); 
-        } else { 
-            optCont.style.display = "flex"; 
-        } 
-    } 
-    typeWriter();
-
-    optCont.innerHTML = ''; 
-    (s.opts || []).forEach(o => { 
-        const b = document.createElement('button'); 
-        b.innerText = o.t; 
-        b.onclick = () => render(o.n); 
-        optCont.appendChild(b); 
-    });
-}
-
-// OYUNU BAŞLATAN KRİTİK SATIR:
-render('start');
+    // OYUNU BAŞLATAN SATIR
+    window.onload = function() {
+        render('start');
+    };
+</script>
+</body>
+</html>
