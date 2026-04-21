@@ -108,19 +108,13 @@
         #death-screen { color: #ff0000; }
         #win-screen { color: #fff; }
         
-        /* MUTLU SON RESMİ STİLİ */
         #win-photo {
-            max-width: 80%;
-            height: auto;
-            border: 3px solid #ff4b2b;
-            border-radius: 15px;
-            box-shadow: 0 0 15px #ff4b2b;
-            margin-bottom: 20px;
+            max-width: 80%; height: auto; border: 3px solid #ff4b2b;
+            border-radius: 15px; box-shadow: 0 0 15px #ff4b2b; margin-bottom: 20px;
         }
 
         @keyframes beat { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
-        /* KALP OYUNU STİLLERİ */
         #heart-game-overlay {
             display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9); z-index: 300; overflow: hidden; touch-action: none;
@@ -129,12 +123,8 @@
             position: absolute; bottom: 50px; left: 50%; width: 60px; height: 60px;
             transform: translateX(-50%); z-index: 310;
         }
-        .falling-heart {
-            position: absolute; font-size: 30px; color: #ff4b2b; z-index: 305;
-        }
-        #heart-score {
-            position: absolute; top: 20px; left: 20px; font-size: 1.2em; color: #ff4b2b; z-index: 320;
-        }
+        .falling-heart { position: absolute; font-size: 30px; color: #ff4b2b; z-index: 305; }
+        #heart-score { position: absolute; top: 20px; left: 20px; font-size: 1.2em; color: #ff4b2b; z-index: 320; }
     </style>
 </head>
 <body>
@@ -159,7 +149,7 @@
 
     <div id="win-screen" class="fullscreen-overlay">
         <h1>MUTLU SON</h1>
-        <img src="win_photo.png" id="win-photo" alt="Kahraman ve Zehra Sarılıyor">
+        <img src="sarilma.jpg" id="win-photo" alt="Kahraman ve Zehra Sarılıyor">
         <p style="color: #ff4b2b; animation: beat 1s infinite;">beni affet ❤️</p>
         <button onclick="resetGame()" class="rect-btn">BAŞTAN</button>
     </div>
@@ -175,7 +165,6 @@
 
 <script>
     const imgs = { "Ayşe": "ayse.png", "Ayse": "ayse.png", "Zehra": "zehra.png", "Kahraman": "kahraman.png" };
-    
     const data = {
         start: { char: "Ayşe", text: "Zehra... Seni Kahraman'la rüyamda gördüm. Bir çocuğunuz vardı ve çok mutluydunuz Bence ona bir şans ver.", opts: [{ t: "Kabul Et", n: "death" }, { t: "Ayşe'yi Süründür", n: "step2" }] },
         death: { death: true },
@@ -215,193 +204,113 @@
     };
 
     let typingTimer, isTyping = false, currentText = "";
-    const bgMusic = new Audio('muzik.mp3');
-    bgMusic.loop = true;
-    bgMusic.volume = 0.3;
-
-    window.addEventListener('mousedown', () => { bgMusic.play().catch(()=>{}); }, {once:true});
-    window.addEventListener('touchstart', () => { bgMusic.play().catch(()=>{}); }, {once:true});
-
-    function playTypeSound() {
-        const sound = new Audio('daktilo.mp3'); sound.volume = 0.4;
-        sound.play().catch(() => {});
-    }
-
-    function triggerShake() {
-        const container = document.getElementById('game-container');
-        container.classList.add('shake-effect');
-        setTimeout(() => container.classList.remove('shake-effect'), 500);
-    }
+    const bgMusic = new Audio('muzik.mp3'); bgMusic.loop = true; bgMusic.volume = 0.3;
+    const typeSnd = new Audio('daktilo.mp3'); typeSnd.volume = 0.4;
 
     function resetGame() {
         document.getElementById('death-screen').style.display = 'none';
         document.getElementById('win-screen').style.display = 'none';
         document.getElementById('heart-game-overlay').style.display = 'none';
         document.getElementById('start-overlay').style.display = 'flex';
-        xOffset = 0; yOffset = 0;
+        xOffset = 0; yOffset = 0; score = 0;
         document.getElementById('drag-cicek').style.transform = "translate3d(0, 0, 0)";
-        isTyping = false;
-        clearTimeout(typingTimer);
-        score = 0;
+        isTyping = false; clearTimeout(typingTimer);
     }
 
-    // --- KALP OYUNU MANTIĞI ---
-    let score = 0;
-    let gameActive = false;
-    const player = document.getElementById('heart-player');
-    const gameOverlay = document.getElementById('heart-game-overlay');
+    // --- YAZI HIZLANDIRMA DÜZELTMESİ ---
+    document.getElementById('game-container').addEventListener('click', function() {
+        if (isTyping) {
+            clearTimeout(typingTimer);
+            document.getElementById('main-text').innerText = currentText;
+            document.getElementById('options').style.display = "flex";
+            isTyping = false;
+        }
+    });
 
+    // --- KALP OYUNU ---
+    let score = 0, gameActive = false;
     function startHeartGame() {
-        gameOverlay.style.display = 'block';
-        score = 0;
-        gameActive = true;
-        updateScore();
-        spawnHeart();
+        document.getElementById('heart-game-overlay').style.display = 'block';
+        score = 0; gameActive = true; updateScore(); spawnHeart();
     }
-
     function updateScore() {
         document.getElementById('heart-score').innerText = `Sevgi: ${score} / 10`;
-        if (score >= 10) {
-            gameActive = false;
-            gameOverlay.style.display = 'none';
-            // OYUN BİTİNCE MUTLU SONA GİT
-            render('happy');
-        }
+        if (score >= 10) { gameActive = false; document.getElementById('heart-game-overlay').style.display = 'none'; render('happy'); }
     }
-
     function spawnHeart() {
         if (!gameActive) return;
-        const heart = document.createElement('div');
-        heart.className = 'falling-heart';
-        heart.innerText = '❤️';
-        heart.style.left = Math.random() * (window.innerWidth - 30) + 'px';
-        heart.style.top = '-50px';
-        gameOverlay.appendChild(heart);
-
+        const h = document.createElement('div'); h.className = 'falling-heart'; h.innerText = '❤️';
+        h.style.left = Math.random() * (window.innerWidth - 30) + 'px'; h.style.top = '-50px';
+        document.getElementById('heart-game-overlay').appendChild(h);
         let pos = -50;
-        const fallInterval = setInterval(() => {
-            if (!gameActive) { clearInterval(fallInterval); heart.remove(); return; }
-            pos += 5;
-            heart.style.top = pos + 'px';
-
-            const hRect = heart.getBoundingClientRect();
-            const pRect = player.getBoundingClientRect();
-
-            if (hRect.bottom > pRect.top && hRect.left < pRect.right && hRect.right > pRect.left) {
-                score++;
-                updateScore();
-                clearInterval(fallInterval);
-                heart.remove();
-            }
-
-            if (pos > window.innerHeight) {
-                clearInterval(fallInterval);
-                heart.remove();
-            }
+        const fall = setInterval(() => {
+            if (!gameActive) { clearInterval(fall); h.remove(); return; }
+            pos += 5; h.style.top = pos + 'px';
+            const hr = h.getBoundingClientRect(), pr = document.getElementById('heart-player').getBoundingClientRect();
+            if (hr.bottom > pr.top && hr.left < pr.right && hr.right > pr.left) { score++; updateScore(); clearInterval(fall); h.remove(); }
+            if (pos > window.innerHeight) { clearInterval(fall); h.remove(); }
         }, 20);
-
         setTimeout(spawnHeart, 800);
     }
 
-    // Oyuncuyu hareket ettirme (Mobil & PC)
-    gameOverlay.addEventListener('touchmove', (e) => {
-        if (!gameActive) return;
-        let x = e.touches[0].clientX;
-        player.style.left = x + 'px';
-    });
-    gameOverlay.addEventListener('mousemove', (e) => {
-        if (!gameActive) return;
-        player.style.left = e.clientX + 'px';
-    });
+    document.getElementById('heart-game-overlay').addEventListener('touchmove', (e) => { if(gameActive) document.getElementById('heart-player').style.left = e.touches[0].clientX + 'px'; });
+    document.getElementById('heart-game-overlay').addEventListener('mousemove', (e) => { if(gameActive) document.getElementById('heart-player').style.left = e.clientX + 'px'; });
 
-    // --- ANA OYUN FONKSİYONLARI ---
+    // --- SÜRÜKLE BIRAK ---
     const cicek = document.getElementById('drag-cicek');
-    const zehraTarget = document.getElementById('drop-zehra');
-    let active = false, currentX = 0, currentY = 0, initialX = 0, initialY = 0, xOffset = 0, yOffset = 0;
+    const zehraT = document.getElementById('drop-zehra');
+    let active = false, xOffset = 0, yOffset = 0, initX, initY;
 
-    cicek.addEventListener("touchstart", dragStart, {passive: false});
-    document.addEventListener("touchend", dragEnd, {passive: false});
-    document.addEventListener("touchmove", drag, {passive: false});
-    cicek.addEventListener("mousedown", dragStart, false);
-    document.addEventListener("mouseup", dragEnd, false);
-    document.addEventListener("mousemove", drag, false);
-
-    function dragStart(e) {
-        if (e.type === "touchstart") { initialX = e.touches[0].clientX - xOffset; initialY = e.touches[0].clientY - yOffset; }
-        else { initialX = e.clientX - xOffset; initialY = e.clientY - yOffset; }
-        if (e.target === cicek) active = true;
-    }
-
-    function dragEnd() {
+    cicek.onmousedown = cicek.ontouchstart = (e) => {
+        active = true;
+        const evt = e.touches ? e.touches[0] : e;
+        initX = evt.clientX - xOffset; initY = evt.clientY - yOffset;
+    };
+    document.onmousemove = document.ontouchmove = (e) => {
         if (!active) return;
-        active = false;
-        const zehraRect = zehraTarget.getBoundingClientRect();
-        const cicekRect = cicek.getBoundingClientRect();
-        if (cicekRect.left < zehraRect.right && cicekRect.right > zehraRect.left && cicekRect.top < zehraRect.bottom && cicekRect.bottom > zehraRect.top) {
-            startGame();
+        const evt = e.touches ? e.touches[0] : e;
+        xOffset = evt.clientX - initX; yOffset = evt.clientY - initY;
+        cicek.style.transform = `translate3d(${xOffset}px, ${yOffset}px, 0)`;
+    };
+    document.onmouseup = document.ontouchend = () => {
+        if (!active) return; active = false;
+        const zr = zehraT.getBoundingClientRect(), cr = cicek.getBoundingClientRect();
+        if (cr.left < zr.right && cr.right > zr.left && cr.top < zr.bottom && cr.bottom > zr.top) {
+            document.getElementById('start-overlay').style.display = 'none';
+            bgMusic.play().catch(()=>{}); render('start');
         } else {
-            xOffset = 0; yOffset = 0; 
-            cicek.style.transition = "transform 0.3s ease-out";
-            cicek.style.transform = "translate3d(0, 0, 0)";
-            setTimeout(() => { cicek.style.transition = "none"; }, 300);
+            xOffset = yOffset = 0; cicek.style.transform = "translate3d(0,0,0)";
         }
-    }
-
-    function drag(e) {
-        if (active) {
-            e.preventDefault();
-            if (e.type === "touchmove") { currentX = e.touches[0].clientX - initialX; currentY = e.touches[0].clientY - initialY; }
-            else { currentX = e.clientX - initialX; currentY = e.clientY - initialY; }
-            xOffset = currentX; yOffset = currentY;
-            cicek.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
-        }
-    }
-
-    function startGame() {
-        document.getElementById('start-overlay').style.display = 'none';
-        bgMusic.play().catch(() => {});
-        render('start');
-    }
+    };
 
     function render(key) {
-        const s = data[key];
-        if (!s) return;
-        if (s.death) { triggerShake(); document.getElementById('death-screen').style.display = 'flex'; return; }
+        const s = data[key]; if (!s) return;
+        if (s.death) { document.getElementById('game-container').classList.add('shake-effect'); setTimeout(()=>document.getElementById('game-container').classList.remove('shake-effect'),500); document.getElementById('death-screen').style.display = 'flex'; return; }
         if (s.win) { document.getElementById('win-screen').style.display = 'flex'; return; }
         if (s.heartGame) { startHeartGame(); return; }
 
         const frame = document.getElementById('char-frame');
-        const charLower = (s.char || "").toLowerCase();
+        if (s.char === "anybody" || !imgs[s.char]) frame.style.display = 'none';
+        else { document.getElementById('char-img').src = imgs[s.char]; frame.style.display = 'flex'; document.getElementById('char-name').innerText = s.char; }
 
-        if (charLower === "anybody" || !imgs[s.char]) {
-            frame.style.display = 'none';
-            document.getElementById('char-name').innerText = "";
-        } else {
-            document.getElementById('char-img').src = imgs[s.char];
-            frame.style.display = 'flex';
-            document.getElementById('char-name').innerText = s.char;
-        }
-
-        const textElement = document.getElementById('main-text');
-        const optCont = document.getElementById('options');
-        textElement.innerText = ""; optCont.style.display = "none";
-        clearTimeout(typingTimer);
+        const txt = document.getElementById('main-text'); const opt = document.getElementById('options');
+        txt.innerText = ""; opt.style.display = "none"; clearTimeout(typingTimer);
         currentText = s.text; let i = 0; isTyping = true;
 
-        function typeWriter() {
+        function type() {
             if (i < s.text.length) {
-                textElement.innerText += s.text.charAt(i);
-                if (s.text.charAt(i) !== " " && i % 2 === 0) playTypeSound();
-                i++; typingTimer = setTimeout(typeWriter, 80);
-            } else { optCont.style.display = "flex"; isTyping = false; }
+                txt.innerText += s.text.charAt(i);
+                if (s.text.charAt(i) !== " " && i % 2 === 0) typeSnd.cloneNode().play().catch(()=>{});
+                i++; typingTimer = setTimeout(type, 80);
+            } else { opt.style.display = "flex"; isTyping = false; }
         }
-        typeWriter();
+        type();
 
-        optCont.innerHTML = '';
+        opt.innerHTML = '';
         (s.opts || []).forEach(o => {
             const b = document.createElement('button'); b.innerText = o.t;
             b.onclick = (e) => { e.stopPropagation(); render(o.n); };
-            optCont.appendChild(b);
+            opt.appendChild(b);
         });
     }
 </script>
