@@ -87,6 +87,18 @@
             font-family: 'Courier New', monospace; font-size: 0.9em;
         }
 
+        /* YENİ: KISALTILMIŞ İNCE DİKDÖRTGEN BUTON */
+        .rect-btn {
+            max-width: 120px !important; /* Genişlik biraz daha kısaltıldı */
+            height: 32px !important;    /* İnce olması için yükseklik düşürüldü */
+            padding: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 0.7em !important;
+            margin-top: 20px;
+        }
+
         .fullscreen-overlay {
             background: #000; z-index: 100; display: none; position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -109,13 +121,13 @@
 <div id="game-container">
     <div id="death-screen" class="fullscreen-overlay">
         <h1>ZEHRA SENİ YEDİ</h1>
-        <button onclick="resetGame()" style="width: 140px; height: 40px; padding: 0; font-size: 0.75em; margin-top: 15px; line-height: 40px;">TEKRAR DENE</button>
+        <button onclick="resetGame()" class="rect-btn">TEKRAR DENE</button>
     </div>
 
     <div id="win-screen" class="fullscreen-overlay">
         <h1>MUTLU SON</h1>
         <p style="color: #ff4b2b; animation: beat 1s infinite;">beni affet ❤️</p>
-        <button onclick="resetGame()" style="width: 140px; height: 40px; padding: 0; font-size: 0.75em; margin-top: 25px; line-height: 40px;">BAŞTAN</button>
+        <button onclick="resetGame()" class="rect-btn">BAŞTAN</button>
     </div>
 
     <div id="visual-area"><div id="char-frame"><img id="char-img" src="" alt=""></div></div>
@@ -190,7 +202,7 @@
         document.getElementById('win-screen').style.display = 'none';
         document.getElementById('start-overlay').style.display = 'flex';
         xOffset = 0; yOffset = 0;
-        cicek.style.transform = "translate3d(0, 0, 0)";
+        document.getElementById('drag-cicek').style.transform = "translate3d(0, 0, 0)";
         isTyping = false;
         clearTimeout(typingTimer);
     }
