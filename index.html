@@ -55,7 +55,7 @@
             color: #ddd; 
             flex: 1; 
             min-height: 60px;
-            white-space: pre-wrap; /* Boşluklar korunsun diye ekledim */
+            white-space: pre-wrap;
         }
 
         .choices { display: flex; gap: 10px; margin-top: 15px; }
@@ -129,7 +129,8 @@
 
 
     let typingTimer;
-    let isTyping = false; // Yazma durumunu takip için ekledim
+    let isTyping = false;
+    let currentText = ""; // Geçiş için yardımcı değişken
 
 
     function playTypeSound() {
@@ -138,6 +139,17 @@
         sound.play().catch(() => {});
         sound.onended = function() { this.remove(); };
     }
+
+
+    // TIKLAMA OLAYINI RENDER DIŞINA ALDIM (ÇALIŞMAMA SEBEBİ BUYDU)
+    document.getElementById('game-container').addEventListener('click', function() {
+        if (isTyping) {
+            clearTimeout(typingTimer);
+            document.getElementById('main-text').innerText = currentText;
+            document.getElementById('options').style.display = "flex";
+            isTyping = false;
+        }
+    });
 
 
     function render(key) {
@@ -164,18 +176,9 @@
         optCont.style.display = "none";
         clearTimeout(typingTimer);
         
+        currentText = s.text; // Tıklama için güncel metni kaydet
         let i = 0;
-        isTyping = true; // Yazma başladı
-
-        // Ekrana dokunma olayı
-        document.getElementById('game-container').onclick = function() {
-            if (isTyping) {
-                clearTimeout(typingTimer); // Yazmayı durdur
-                textElement.innerText = s.text; // Metni tamamla
-                optCont.style.display = "flex"; // Seçenekleri aç
-                isTyping = false; // Yazma bitti
-            }
-        };
+        isTyping = true;
 
         function typeWriter() {
             if (i < s.text.length) {
@@ -189,7 +192,7 @@
                 typingTimer = setTimeout(typeWriter, 100);
             } else {
                 optCont.style.display = "flex";
-                isTyping = false; // Normal bitti
+                isTyping = false;
             }
         }
         typeWriter();
@@ -199,7 +202,7 @@
             const b = document.createElement('button');
             b.innerText = o.t;
             b.onclick = (e) => { 
-                e.stopPropagation(); // Butona basınca ekrana tıklama sayılmasın
+                e.stopPropagation(); 
                 render(o.n); 
             };
             optCont.appendChild(b);
