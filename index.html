@@ -110,13 +110,13 @@
 <div id="game-container">
     <div id="death-screen" class="fullscreen-overlay">
         <h1>ZEHRA SENİ YEDİ</h1>
-        <button onclick="location.reload()" style="max-width: 200px; margin-top: 20px;">TEKRAR DENE</button>
+        <button onclick="resetGame()" style="max-width: 200px; margin-top: 20px;">TEKRAR DENE</button>
     </div>
 
     <div id="win-screen" class="fullscreen-overlay">
         <h1>MUTLU SON</h1>
         <p style="color: #ff4b2b; animation: beat 1s infinite;">beni affet ❤️</p>
-        <button onclick="location.reload()" style="max-width: 200px; margin-top: 30px;">BAŞTAN</button>
+        <button onclick="resetGame()" style="max-width: 200px; margin-top: 30px;">BAŞTAN</button>
     </div>
 
     <div id="visual-area"><div id="char-frame"><img id="char-img" src="" alt=""></div></div>
@@ -130,8 +130,6 @@
 
 <script>
     const imgs = { "Ayşe": "ayse.png", "Ayse": "ayse.png", "Zehra": "zehra.png", "Kahraman": "kahraman.png" };
-    
-    // Diyalogların güncellenmiş hali (Anybody düzeltmeleri ile)
     const data = {
         start: { char: "Ayşe", text: "Zehra... Seni Kahraman'la rüyamda gördüm. Bir çocuğunuz vardı ve çok mutluydunuz Bence ona bir şans ver.", opts: [{ t: "Kabul Et", n: "death" }, { t: "Ayşe'yi Süründür", n: "step2" }] },
         death: { death: true },
@@ -171,22 +169,14 @@
 
     let typingTimer, isTyping = false, currentText = "";
     
-    // MÜZİK SİSTEMİ: Kaldığı yerden devam etme özelliği
+    // MÜZİK SİSTEMİ (KESİNTİSİZ)
     const bgMusic = new Audio('muzik.mp3');
     bgMusic.loop = true;
     bgMusic.volume = 0.3;
 
-    // Sayfa kapansa/yenilense bile süreyi hatırla
-    if (localStorage.getItem('musicTime')) {
-        bgMusic.currentTime = parseFloat(localStorage.getItem('musicTime'));
-    }
-
-    // Her 1 saniyede bir müziğin süresini kaydet
-    setInterval(() => {
-        if (!bgMusic.paused) {
-            localStorage.setItem('musicTime', bgMusic.currentTime);
-        }
-    }, 1000);
+    // Etkileşim olduğu an müziği başlat
+    window.addEventListener('mousedown', () => { bgMusic.play().catch(()=>{}); }, {once:true});
+    window.addEventListener('touchstart', () => { bgMusic.play().catch(()=>{}); }, {once:true});
 
     function playTypeSound() {
         const sound = new Audio('daktilo.mp3'); sound.volume = 0.4;
@@ -197,6 +187,17 @@
         const container = document.getElementById('game-container');
         container.classList.add('shake-effect');
         setTimeout(() => container.classList.remove('shake-effect'), 500);
+    }
+
+    // YENİLENME MANTIĞI (Müziği kesmez)
+    function resetGame() {
+        document.getElementById('death-screen').style.display = 'none';
+        document.getElementById('win-screen').style.display = 'none';
+        document.getElementById('start-overlay').style.display = 'flex';
+        xOffset = 0; yOffset = 0;
+        cicek.style.transform = "translate3d(0, 0, 0)";
+        isTyping = false;
+        clearTimeout(typingTimer);
     }
 
     document.getElementById('game-container').addEventListener('click', function() {
@@ -263,20 +264,17 @@
         if (s.win) { document.getElementById('win-screen').style.display = 'flex'; return; }
 
         const frame = document.getElementById('char-frame');
-        const charName = s.char.toLowerCase();
+        const charLower = (s.char || "").toLowerCase();
 
-        // ANYBODY DÜZELTMESİ: Eğer anybody ise resmi gizle
-        if (charName === "anybody") {
+        if (charLower === "anybody" || !imgs[s.char]) {
             frame.style.display = 'none';
-        } else if (imgs[s.char]) {
+        } else {
             document.getElementById('char-img').src = imgs[s.char];
             frame.style.display = 'flex';
             frame.classList.add('char-focus');
-        } else {
-            frame.style.display = 'none';
         }
 
-        document.getElementById('char-name').innerText = (charName === "anybody") ? "" : s.char;
+        document.getElementById('char-name').innerText = (charLower === "anybody") ? "" : s.char;
         const textElement = document.getElementById('main-text');
         const optCont = document.getElementById('options');
         textElement.innerText = ""; optCont.style.display = "none";
