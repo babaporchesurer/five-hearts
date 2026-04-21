@@ -120,6 +120,7 @@
 <script>
     const imgs = { "Ayşe": "ayse.png", "Zehra": "zehra.png", "Kahraman": "kahraman.png" };
     
+    // TÜM DİYALOGLAR (32 ADIM) EKSİKSİZ GERİ GELDİ
     const data = {
         start: { char: "Ayşe", text: "Zehra... Seni Kahraman'la rüyamda gördüm. Bir çocuğunuz vardı ve çok mutluydunuz Bence ona bir şans ver.", opts: [{ t: "Kabul Et", n: "death" }, { t: "Ayşe'yi Süründür", n: "step2" }] },
         death: { death: true },
@@ -229,7 +230,6 @@
         });
     }
 
-    // Sürükle Bırak
     const cicek = document.getElementById('drag-cicek');
     let active = false, xOff = 0, yOff = 0, startX, startY;
     const dragStart = (e) => { active = true; const evt = e.touches ? e.touches[0] : e; startX = evt.clientX - xOff; startY = evt.clientY - yOff; };
