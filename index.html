@@ -22,6 +22,17 @@
             padding-bottom: env(safe-area-inset-bottom);
         }
 
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            50% { transform: translate(-1px, 2px) rotate(1deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+        .shake-effect { animation: shake 0.5s; }
+
         #start-overlay {
             background: #000; z-index: 200; position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -35,80 +46,87 @@
             display: flex; justify-content: center; align-items: flex-start;
             background: #111;
         }
-        #drop-zehra img { width: 100%; height: auto; }
 
-        #drag-cicek { width: 100px; height: 100px; cursor: grab; position: relative; z-index: 210; touch-action: none; }
+        #drop-zehra img { width: 100%; height: auto; object-fit: cover; margin-top: 5px; }
 
-        #visual-area { flex: 1; position: relative; overflow: hidden; }
+        #drag-cicek {
+            width: 100px; height: 100px; cursor: grab;
+            position: relative; z-index: 210; 
+            touch-action: none; -webkit-user-drag: none; user-select: none;
+            will-change: transform;
+        }
+
+        #visual-area { flex: 1; position: relative; overflow: hidden; touch-action: none; }
 
         #char-frame {
             position: absolute; bottom: 10px; left: 20px; width: 100px; height: 140px;
-            border-left: 4px solid #ff4b2b; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            border-left: 4px solid #ff4b2b;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
             display: none; justify-content: center; align-items: flex-end; z-index: 10;
+            transition: all 0.3s ease;
         }
-        #char-img { height: 90%; width: auto; object-fit: contain; }
+
+        .char-focus { filter: drop-shadow(0 0 10px #ff4b2b) brightness(1.2); transform: scale(1.1); }
+        #char-img { height: 90%; width: auto; object-fit: contain; animation: breathe 3s ease-in-out infinite; }
+
+        @keyframes breathe { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
         #dialogue-box {
-            background: rgba(0,0,0,0.95); border-top: 2px solid #ff4b2b; 
-            padding: 20px; min-height: 180px; z-index: 15; display: flex; flex-direction: column;
+            background: linear-gradient(to top, #000 80%, rgba(0,0,0,0.8));
+            border-top: 2px solid rgba(255,75,43,0.5); padding: 20px;
+            min-height: 180px; z-index: 15; display: flex; flex-direction: column;
         }
 
         #char-name { color: #ff4b2b; font-size: 1.2em; font-weight: bold; margin-bottom: 5px; }
-        #main-text { font-size: 1em; line-height: 1.4; color: #ddd; min-height: 60px; white-space: pre-wrap; }
+        #main-text { font-size: 1em; line-height: 1.4; color: #ddd; flex: 1; min-height: 60px; white-space: pre-wrap; }
 
         .choices { display: flex; gap: 10px; margin-top: 15px; }
+
         button {
             background: transparent; color: #fff; border: 1px solid #ff4b2b;
-            padding: 12px; cursor: pointer; flex: 1; font-family: 'Courier New', monospace;
+            padding: 12px; cursor: pointer; flex: 1;
+            font-family: 'Courier New', monospace; font-size: 0.9em;
         }
 
         .fullscreen-overlay {
             background: #000; z-index: 100; display: none; position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            justify-content: center; align-items: center; flex-direction: column; text-align: center;
+            justify-content: center; align-items: center; flex-direction: column;
         }
+
+        #death-screen { color: #ff0000; }
+        #win-screen { color: #fff; }
 
         #win-photo {
-            width: 85%; max-width: 400px; height: auto; border: 2px solid #ff4b2b;
-            border-radius: 10px; margin: 20px 0; display: block;
+            max-width: 80%; height: auto; border: 3px solid #ff4b2b;
+            border-radius: 15px; box-shadow: 0 0 15px #ff4b2b; margin-bottom: 20px;
         }
 
-        #heart-game-overlay {
-            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); z-index: 300; overflow: hidden; touch-action: none;
-        }
-        #heart-player { position: absolute; bottom: 60px; left: 50%; width: 70px; transform: translateX(-50%); }
-        .falling-heart { position: absolute; font-size: 35px; color: #ff4b2b; }
-        #heart-score { position: absolute; top: 30px; width: 100%; text-align: center; font-size: 1.5em; color: #ff4b2b; }
+        @keyframes beat { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
 
 <div id="start-overlay">
     <div id="drop-zehra"><img src="zehra.png" alt="Zehra"></div>
-    <p style="color:#ff4b2b;">çiçeği zehra'ya sürükle</p>
-    <img src="cicek.png" id="drag-cicek" alt="Çiçek">
-</div>
-
-<div id="heart-game-overlay">
-    <div id="heart-score">Sevgi: 0 / 10</div>
-    <img src="kahraman.png" id="heart-player">
+    <div id="overlay-instruction" style="color:#ff4b2b; animation: breathe 2s infinite;">başlamak için çiçeği zehra'ya sürükle</div>
+    <img src="cicek.png" id="drag-cicek" alt="Çiçek" draggable="false">
 </div>
 
 <div id="game-container">
     <div id="death-screen" class="fullscreen-overlay">
-        <h1 style="color: #ff0000; font-size: 2em;">ZEHRA SENİ YEDİ</h1>
-        <button onclick="location.reload()" style="width: 200px; margin-top: 20px;">TEKRAR DENE</button>
+        <h1>ZEHRA SENİ YEDİ</h1>
+        <button onclick="resetGame()" style="max-width: 150px; padding: 8px; font-size: 0.8em; margin-top: 20px;">TEKRAR DENE</button>
     </div>
 
     <div id="win-screen" class="fullscreen-overlay">
         <h1>MUTLU SON</h1>
-        <img src="image_4.png" id="win-photo">
-        <p style="color: #ff4b2b; font-size: 1.2em;">beni affet ❤️</p>
-        <button onclick="location.reload()" style="width: 200px; margin-top: 20px;">BAŞTAN</button>
+        <img src="image_4.png" id="win-photo" alt="Kahraman ve Zehra Sarılıyor">
+        <p style="color: #ff4b2b; animation: beat 1s infinite;">beni affet ❤️</p>
+        <button onclick="resetGame()" style="max-width: 150px; padding: 8px; font-size: 0.8em; margin-top: 30px;">BAŞTAN</button>
     </div>
 
-    <div id="visual-area"><div id="char-frame"><img id="char-img" src=""></div></div>
+    <div id="visual-area"><div id="char-frame"><img id="char-img" src="" alt=""></div></div>
 
     <div id="dialogue-box">
         <div id="char-name"></div>
@@ -118,124 +136,174 @@
 </div>
 
 <script>
-    const imgs = { "Ayşe": "ayse.png", "Zehra": "zehra.png", "Kahraman": "kahraman.png" };
-    
-    // TÜM DİYALOGLAR (32 ADIM) EKSİKSİZ GERİ GELDİ
+    const imgs = { "Ayşe": "ayse.png", "Ayse": "ayse.png", "Zehra": "zehra.png", "Kahraman": "kahraman.png" };
     const data = {
         start: { char: "Ayşe", text: "Zehra... Seni Kahraman'la rüyamda gördüm. Bir çocuğunuz vardı ve çok mutluydunuz Bence ona bir şans ver.", opts: [{ t: "Kabul Et", n: "death" }, { t: "Ayşe'yi Süründür", n: "step2" }] },
         death: { death: true },
         step2: { char: "Zehra", text: "Madem bu kadar eminsin, istek atarsa bakarız... (O akşam...)", opts: [{ t: "Mesajı Oku", n: "step3" }] },
-        step3: { char: "Zehra", text: "Mesajı okur 'Artık benimsin geçmiş olsun.'", opts: [{ t: "Süründür", n: "step4" }, { t: "Kabul Et", n: "death" }] },
-        step4: { char: "Zehra", text: "Mesaj yazar: 'PUHAHAHAHAHA' .", opts: [{ t: "Onun ol", n: "step5" }] },
-        step5: { char: "Kahraman", text: "Biz bu kızla nasıl görüntülü konuşsak?", opts: [{ t: "Gizlice dinle", n: "step6" }] },
-        step6: { char: "Kahraman", text: "Ayşe ile konuşmam lazım.", opts: [{ t: "Dinlemeye devam et", n: "step7" }] },
-        step7: { char: "Ayşe", text: "ALO!", opts: [{ t: "Hmm ne olacak acaba?", n: "step8" }] },
-        step8: { char: "Kahraman", text: "Alo.", opts: [{ t: "Dinlemeye devam", n: "step9" }] },
-        step9: { char: "Kahraman", text: "Sana işim düştü.", opts: [{ t: "...", n: "step10" }] },
-        step10: { char: "Ayşe", text: "HAYIRDIR!!!!", opts: [{ t: "...", n: "step11" }] },
-        step11: { char: "Kahraman", text: "Beni Zehra'yla görüntülü konuşturman lazım.", opts: [{ t: "...", n: "step12" }] },
-        step12: { char: "Ayşe", text: "Ben hallederim sıkma canını.", opts: [{ t: "...", n: "step13" }] },
-        step13: { char: "Kahraman", text: "Sana güveniyorum.", opts: [{ t: "Yarına geç", n: "step14" }] },
-        step14: { char: "anybody", text: "Ayşe'yle Zehra okulda buluşurlar.", opts: [{ t: "Kahraman'ı ara", n: "step15" }] },
-        step15: { char: "Zehra", text: "Hadi Kahraman'ı arayalım.", opts: [{ t: "Ara", n: "step16" }] },
-        step16: { char: "Ayşe", text: "Hadi arayalım.", opts: [{ t: "Arama başlatır", n: "step17" }] },
-        step17: { char: "anybody", text: "Kahraman'ı ararlar.", opts: [{ t: "Alo", n: "step18" }, { t: "Yüzüne kapat", n: "death" }] },
-        step18: { char: "Zehra", text: "Aloooo", opts: [{ t: "...", n: "step19" }] },
-        step19: { char: "Kahraman", text: "Alo", opts: [{ t: "Dinle", n: "step20" }] },
-        step20: { char: "Kahraman", text: "Ayşe bana bir sözün vardı, vakti geldi sanki.", opts: [{ t: "Şaşırmış gibi yap", n: "step21" }, { t: "Zaten bildiğini söyle", n: "death" }] },
-        step21: { char: "Zehra", text: "Ne sözü Ayşe?", opts: [{ t: "?", n: "step22" }] },
-        step22: { char: "Ayşe", text: "Görüntülü arayacağım.", opts: [{ t: "Süründür", n: "step23" }, { t: "Kabul et", n: "death" }] },
-        step23: { char: "Zehra", text: "HAYIR ÇİNGENLERE BENZİYORUM AMK.", opts: [{ t: "Kolpa kadınsın", n: "step24" }] },
-        step24: { char: "Kahraman", text: "HAYIR ben seni her halinle seviyorum ve arıyorum bekle.", opts: [{ t: "ARAMA", n: "step25" }, { t: "ARA", n: "death" }] },
-        step25: { char: "Zehra", text: "İNTERNETİM YOK (BAHANE)", opts: [{ t: "Üzüldü Kahraman", n: "step26" }] },
-        step26: { char: "Kahraman", text: "Öyle olsun.", opts: [{ t: "...", n: "step27" }] },
-        step27: { char: "anybody", text: "SONRAKİ AKŞAM", opts: [{ t: "...", n: "step28" }] },
-        step28: { char: "Kahraman", text: "Zehra üzgünüm ama sebepsiz ayrılmamız lazım.", opts: [{ t: "Neden?", n: "step29" }, { t: "Ayrıl", n: "death" }] },
-        step29: { char: "Kahraman", text: "Seni korumak için her şeyi yaparım. Ama senin iyiliğin için sebepsiz ayrılmamız gerek.", opts: [{ t: "Vazgeçme", n: "step30" },{ t: "Vazgeç", n: "death" }] },
-        step30: { char: "Zehra", text: "'Neler olduğunu anlatacaksın Kahraman!'", opts: [{ t: "Dinle", n: "step31" }] },
-        step31: { char: "Kahraman", text: "Bak ailevi sorunlar çıktı ama yanılmışım! ", opts: [{ t: "Dinle", n: "step32" }] },
-        step32: { char: "Kahraman", text: "Özür dilerim. Seni kaybetmekten korktum. Beni affedebilir misin?", opts: [{ t: "Affet ❤️", n: "minigame" }, { t: "Reddet", n: "death" }] },
-        minigame: { heartGame: true },
+        step3: { char: "Zehra", text: "mesajı okur 'artık benimsin geçmiş olsun(kahraman söyler) ' .", opts: [{ t: "süründür", n: "step4" }, { t: "kabul et", n: "death" }] },
+        step4: { char: "Zehra", text: "mesaj yazar ya 'PUHAHAHAHAHA' .", opts: [{ t: "Onun ol", n: "step5" }] },
+        step5: { char: "Kahraman", text: " biz bu kızla nasıl görüntülü konuşsak  .", opts: [{ t: "gizlice dinle", n: "step6" }] },
+        step6: { char: "Kahraman", text: "ayşe ile konuşmam lazım .", opts: [{ t: "dinlemeye devam et", n: "step7" }] },
+        step7: { char: "Ayse", text: "ALO' .", opts: [{ t: "hmm nolcak acaaba", n: "step8" }] },
+        step8: { char: "Kahraman", text: "alo.", opts: [{ t: "dinlemeye devam ", n: "step9" }] },
+        step9: { char: "Kahraman", text: "sana işim düştü .", opts: [{ t: "...", n: "step10" }] },
+        step10: { char: "Ayse", text: "HAYIRDIR!!!! .", opts: [{ t: "...", n: "step11" }] },
+        step11: { char: "Kahraman", text: "beni zehrayla görüntülü konuşturman lazım.", opts: [{ t: "...", n: "step12" }] },
+        step12: { char: "Ayse", text: "ben hallederim sıkma canını", opts: [{ t: "...", n: "step13" }] },
+        step12: { char: "Kahraman", text: "sana güveniyorumm", opts: [{ t: "yarına geç", n: "step13" }] },
+        step13: { char: "anybody", text: "ayşeyle zehra okulda buluşurlar .", opts: [{ t: "kahramanı ara", n: "step14" }] },
+        step14: { char: "Zehra", text: "hadi kahramanı arayalımm", opts: [{ t: "ara", n: "step15" }] },
+        step15: { char: "Ayse", text: "hadi arayalım", opts: [{ t: "arama başlatır", n: "step16" }] },
+        step16: { char: "anybody", text: "kahramanı ararlar", opts: [{ t: "alo", n: "step17" }, { t: "yüzüne kapat", n: "death" }] },
+        step17: { char: "Zehra", text: "aloooo", opts: [{ t: "...", n: "step18" }] },
+        step18: { char: "Kahraman", text: "aloo", opts: [{ t: "dinle", n: "step19" }] },
+        step19: { char: "Kahraman", text: "ayşe bana bir sözün vardıı vakti geldi sanki", opts: [{ t: "şaşırmış gibi yap", n: "step20" }, { t: "zaten bildiğini söyle", n: "death" }] },
+        step20: { char: "Zehra", text: "ne sözü ayşe ", opts: [{ t: "?", n: "step21" }] },
+        step21: { char: "Ayşe", text: "görüntülü arayacağım", opts: [{ t: "süründür(kahramanı)", n: "step22" }, { t: "kabul et", n: "death" }] },
+        step22: { char: "Zehra", text: "HAYIR ÇİNGENLERE BENZİORUM AMK .", opts: [{ t: "kolpa kadınsın", n: "step23" }] },
+        step23: { char: "Kahraman", text: "HAYIR ben seni her halinle seviyoum ve arıyorum beklee", opts: [{ t: "ARAMA", n: "step24" }, { t: "ARA", n: "death" }] },
+        step24: { char: "Zehra", text: "İNTERNETİM YOK (BAHANE)", opts: [{ t: "üzüldü kahraman", n: "step25" }] },
+        step25: { char: "Kahraman", text: "öyle olsun", opts: [{ t: "...", n: "step26" }] },
+        step26: { char: "ANYBODY", text: "SONRAKİ AKŞAM", opts: [{ t: "...", n: "step27" }] },
+        step27: { char: "Kahraman", text: "zehra üzgünüm ama sebepsiz ayrılmamız lazım", opts: [{ t: "neden amk", n: "step28" }, { t: "ayrıl", n: "death" }] },
+        step28: { char: "Kahraman", text: "Seni korumak için her şeyi yaparım. ama senin iyliğin için sebepsiz ayrılmamız gerek.", opts: [{ t: "vazgeçme", n: "step29" },{ t: "vazgeç", n: "death" }] },
+        step29: { char: "Zehra", text: "'Neler olduğunu anlatacaksın Kahraman!' Onu köşeye sıkıştırdın.", opts: [{ t: "Dinle", n: "step30" }] },
+        step30: { char: "Kahraman", text: "Bak ailevi sorunlar çıktı ama yanılmışım! ", opts: [{ t: "Dinle", n: "step31" }] },
+        step31: { char: "Kahraman", text: "Özür dilerim. Seni kaybetmekten korktum ama yanılmışım. Beni affedebilir misin?", opts: [{ t: "Affet ❤️", n: "happy" }, { t: "Reddet", n: "death" }] },
         happy: { win: true }
     };
 
     let typingTimer, isTyping = false, currentText = "";
-    const typeSnd = new Audio('daktilo.mp3');
+    
+    // MÜZİK SİSTEMİ (ORİJİNAL, KESİNTİSİZ)
+    const bgMusic = new Audio('muzik.mp3');
+    bgMusic.loop = true;
+    bgMusic.volume = 0.3;
 
-    document.getElementById('game-container').onclick = () => {
+    // Etkileşim olduğu an müziği başlat
+    window.addEventListener('mousedown', () => { bgMusic.play().catch(()=>{}); }, {once:true});
+    window.addEventListener('touchstart', () => { bgMusic.play().catch(()=>{}); }, {once:true});
+
+    function playTypeSound() {
+        const sound = new Audio('daktilo.mp3'); sound.volume = 0.4;
+        sound.play().catch(() => {});
+    }
+
+    function triggerShake() {
+        const container = document.getElementById('game-container');
+        container.classList.add('shake-effect');
+        setTimeout(() => container.classList.remove('shake-effect'), 500);
+    }
+
+    // YENİLENME MANTIĞI (ORİJİNAL, Müziği kesmez)
+    function resetGame() {
+        document.getElementById('death-screen').style.display = 'none';
+        document.getElementById('win-screen').style.display = 'none';
+        document.getElementById('start-overlay').style.display = 'flex';
+        xOffset = 0; yOffset = 0;
+        cicek.style.transform = "translate3d(0, 0, 0)";
+        isTyping = false;
+        clearTimeout(typingTimer);
+    }
+
+    document.getElementById('game-container').addEventListener('click', function() {
         if (isTyping) {
             clearTimeout(typingTimer);
             document.getElementById('main-text').innerText = currentText;
             document.getElementById('options').style.display = "flex";
             isTyping = false;
         }
-    };
+    });
 
-    function startHeartGame() {
-        document.getElementById('heart-game-overlay').style.display = 'block';
-        let score = 0;
-        const spawn = setInterval(() => {
-            if (score >= 10) { clearInterval(spawn); document.getElementById('heart-game-overlay').style.display='none'; render('happy'); return; }
-            const h = document.createElement('div'); h.className = 'falling-heart'; h.innerText = '❤️';
-            h.style.left = Math.random() * (window.innerWidth - 40) + 'px'; h.style.top = '-50px';
-            document.getElementById('heart-game-overlay').appendChild(h);
-            let pos = -50;
-            const fall = setInterval(() => {
-                pos += 6; h.style.top = pos + 'px';
-                const hr = h.getBoundingClientRect(), pr = document.getElementById('heart-player').getBoundingClientRect();
-                if (hr.bottom > pr.top && hr.left < pr.right && hr.right > pr.left) {
-                    score++; document.getElementById('heart-score').innerText = `Sevgi: ${score} / 10`;
-                    clearInterval(fall); h.remove();
-                }
-                if (pos > window.innerHeight) { clearInterval(fall); h.remove(); }
-            }, 20);
-        }, 700);
+    const cicek = document.getElementById('drag-cicek');
+    const zehraTarget = document.getElementById('drop-zehra');
+    let active = false, currentX = 0, currentY = 0, initialX = 0, initialY = 0, xOffset = 0, yOffset = 0;
+
+    cicek.addEventListener("touchstart", dragStart, {passive: false});
+    document.addEventListener("touchend", dragEnd, {passive: false});
+    document.addEventListener("touchmove", drag, {passive: false});
+    cicek.addEventListener("mousedown", dragStart, false);
+    document.addEventListener("mouseup", dragEnd, false);
+    document.addEventListener("mousemove", drag, false);
+
+    function dragStart(e) {
+        if (e.type === "touchstart") { initialX = e.touches[0].clientX - xOffset; initialY = e.touches[0].clientY - yOffset; }
+        else { initialX = e.clientX - xOffset; initialY = e.clientY - yOffset; }
+        if (e.target === cicek) active = true;
     }
 
-    const moveHandler = (e) => {
-        const evt = e.touches ? e.touches[0] : e;
-        document.getElementById('heart-player').style.left = evt.clientX + 'px';
-    };
-    document.getElementById('heart-game-overlay').addEventListener('mousemove', moveHandler);
-    document.getElementById('heart-game-overlay').addEventListener('touchmove', moveHandler);
+    function dragEnd() {
+        if (!active) return;
+        active = false;
+        const zehraRect = zehraTarget.getBoundingClientRect();
+        const cicekRect = cicek.getBoundingClientRect();
+        if (cicekRect.left < zehraRect.right && cicekRect.right > zehraRect.left && cicekRect.top < zehraRect.bottom && cicekRect.bottom > zehraRect.top) {
+            startGame();
+        } else {
+            xOffset = 0; yOffset = 0; 
+            cicek.style.transition = "transform 0.3s ease-out";
+            cicek.style.transform = "translate3d(0, 0, 0)";
+            setTimeout(() => { cicek.style.transition = "none"; }, 300);
+        }
+    }
+
+    function drag(e) {
+        if (active) {
+            e.preventDefault();
+            if (e.type === "touchmove") { currentX = e.touches[0].clientX - initialX; currentY = e.touches[0].clientY - initialY; }
+            else { currentX = e.clientX - initialX; currentY = e.clientY - initialY; }
+            xOffset = currentX; yOffset = currentY;
+            cicek.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+        }
+    }
+
+    function startGame() {
+        document.getElementById('start-overlay').style.display = 'none';
+        bgMusic.play().catch(() => {});
+        render('start');
+    }
 
     function render(key) {
-        const s = data[key]; if (!s) return;
-        if (s.death) { document.getElementById('death-screen').style.display = 'flex'; return; }
+        const s = data[key];
+        if (!s) return;
+        if (s.death) { triggerShake(); document.getElementById('death-screen').style.display = 'flex'; return; }
         if (s.win) { document.getElementById('win-screen').style.display = 'flex'; return; }
-        if (s.heartGame) { startHeartGame(); return; }
 
         const frame = document.getElementById('char-frame');
-        if (s.char === "anybody" || !imgs[s.char]) frame.style.display = 'none';
-        else { document.getElementById('char-img').src = imgs[s.char]; frame.style.display = 'flex'; document.getElementById('char-name').innerText = s.char; }
+        const charLower = (s.char || "").toLowerCase();
 
-        const txt = document.getElementById('main-text'); const opt = document.getElementById('options');
-        txt.innerText = ""; opt.style.display = "none"; clearTimeout(typingTimer);
+        if (charLower === "anybody" || !imgs[s.char]) {
+            frame.style.display = 'none';
+        } else {
+            document.getElementById('char-img').src = imgs[s.char];
+            frame.style.display = 'flex';
+            frame.classList.add('char-focus');
+        }
+
+        document.getElementById('char-name').innerText = (charLower === "anybody") ? "" : s.char;
+        const textElement = document.getElementById('main-text');
+        const optCont = document.getElementById('options');
+        textElement.innerText = ""; optCont.style.display = "none";
+        clearTimeout(typingTimer);
         currentText = s.text; let i = 0; isTyping = true;
 
-        function type() {
+        function typeWriter() {
             if (i < s.text.length) {
-                txt.innerText += s.text.charAt(i);
-                if (i % 2 === 0) typeSnd.cloneNode().play().catch(()=>{});
-                i++; typingTimer = setTimeout(type, 60);
-            } else { opt.style.display = "flex"; isTyping = false; }
+                textElement.innerText += s.text.charAt(i);
+                if (s.text.charAt(i) !== " " && i % 2 === 0) playTypeSound();
+                i++; typingTimer = setTimeout(typeWriter, 100);
+            } else { optCont.style.display = "flex"; isTyping = false; }
         }
-        type();
+        typeWriter();
 
-        opt.innerHTML = '';
+        optCont.innerHTML = '';
         (s.opts || []).forEach(o => {
             const b = document.createElement('button'); b.innerText = o.t;
             b.onclick = (e) => { e.stopPropagation(); render(o.n); };
-            opt.appendChild(b);
+            optCont.appendChild(b);
         });
     }
-
-    const cicek = document.getElementById('drag-cicek');
-    let active = false, xOff = 0, yOff = 0, startX, startY;
-    const dragStart = (e) => { active = true; const evt = e.touches ? e.touches[0] : e; startX = evt.clientX - xOff; startY = evt.clientY - yOff; };
-    const dragMove = (e) => { if (!active) return; const evt = e.touches ? e.touches[0] : e; xOff = evt.clientX - startX; yOff = evt.clientY - startY; cicek.style.transform = `translate3d(${xOff}px, ${yOff}px, 0)`; };
-    const dragEnd = () => { if (!active) return; active = false; const zr = document.getElementById('drop-zehra').getBoundingClientRect(), cr = cicek.getBoundingClientRect(); if (cr.left < zr.right && cr.right > zr.left && cr.top < zr.bottom && cr.bottom > zr.top) { document.getElementById('start-overlay').style.display = 'none'; new Audio('muzik.mp3').play().catch(()=>{}); render('start'); } else { xOff = yOff = 0; cicek.style.transform = "translate3d(0,0,0)"; } };
-    cicek.addEventListener('mousedown', dragStart); cicek.addEventListener('touchstart', dragStart); document.addEventListener('mousemove', dragMove); document.addEventListener('touchmove', dragMove); document.addEventListener('mouseup', dragEnd); document.addEventListener('touchend', dragEnd);
 </script>
 </body>
 </html>
