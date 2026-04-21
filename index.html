@@ -22,6 +22,18 @@
             padding-bottom: env(safe-area-inset-bottom);
         }
 
+        /* EKRAN SARSINTISI ANİMASYONU */
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            50% { transform: translate(-1px, 2px) rotate(1deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+        .shake-effect { animation: shake 0.5s; }
+
         #start-overlay {
             background: #000; z-index: 200; position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -32,27 +44,16 @@
         #drop-zehra {
             width: 180px; height: 180px; border-radius: 50%;
             border: 4px dashed #ff4b2b; overflow: hidden;
-            display: flex; justify-content: center; 
-            align-items: flex-start;
+            display: flex; justify-content: center; align-items: flex-start;
             background: #111;
         }
 
-        #drop-zehra img { 
-            width: 100%; height: auto; 
-            object-fit: cover;
-            margin-top: 5px;
-        }
+        #drop-zehra img { width: 100%; height: auto; object-fit: cover; margin-top: 5px; }
 
         #drag-cicek {
-            width: 100px; height: 100px; 
-            cursor: grab;
-            position: relative;
-            z-index: 210;
-            touch-action: none; /* Sürükleme sırasında sayfanın kaymasını engeller */
-            will-change: transform; /* Performans için */
+            width: 100px; height: 100px; cursor: grab;
+            position: relative; z-index: 210; touch-action: none;
         }
-
-        #overlay-instruction { font-size: 1.1em; color: #ff4b2b; animation: breathe 3s ease-in-out infinite; }
 
         #visual-area { flex: 1; position: relative; overflow: hidden; touch-action: none; }
 
@@ -61,18 +62,15 @@
             border-left: 4px solid #ff4b2b;
             background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
             display: none; justify-content: center; align-items: flex-end; z-index: 10;
+            transition: all 0.3s ease; /* Odaklanma geçişi için */
         }
 
-        #char-img {
-            height: 90%; width: auto; object-fit: contain;
-            animation: breathe 3s ease-in-out infinite;
-        }
+        /* ODAKLANMA (KARAKTER PARLAMASI) */
+        .char-focus { filter: drop-shadow(0 0 10px #ff4b2b) brightness(1.2); transform: scale(1.1); }
 
-        @keyframes breathe {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
+        #char-img { height: 90%; width: auto; object-fit: contain; animation: breathe 3s ease-in-out infinite; }
+
+        @keyframes breathe { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
         #dialogue-box {
             background: linear-gradient(to top, #000 80%, rgba(0,0,0,0.8));
@@ -81,14 +79,7 @@
         }
 
         #char-name { color: #ff4b2b; font-size: 1.2em; font-weight: bold; margin-bottom: 5px; }
-        #main-text { 
-            font-size: 1em; 
-            line-height: 1.4; 
-            color: #ddd; 
-            flex: 1; 
-            min-height: 60px;
-            white-space: pre-wrap;
-        }
+        #main-text { font-size: 1em; line-height: 1.4; color: #ddd; flex: 1; min-height: 60px; white-space: pre-wrap; }
 
         .choices { display: flex; gap: 10px; margin-top: 15px; }
 
@@ -112,15 +103,11 @@
 </head>
 <body>
 
-
 <div id="start-overlay">
-    <div id="drop-zehra">
-        <img src="zehra.png" alt="Zehra">
-    </div>
-    <div id="overlay-instruction">başlamak için çiçeği zehra'ya sürükle</div>
+    <div id="drop-zehra"><img src="zehra.png" alt="Zehra"></div>
+    <div id="overlay-instruction" style="color:#ff4b2b; animation: breathe 2s infinite;">başlamak için çiçeği zehra'ya sürükle</div>
     <img src="cicek.png" id="drag-cicek" alt="Çiçek" draggable="true">
 </div>
-
 
 <div id="game-container">
     <div id="death-screen" class="fullscreen-overlay">
@@ -134,9 +121,7 @@
         <button onclick="location.reload()" style="max-width: 200px; margin-top: 30px;">BAŞTAN</button>
     </div>
 
-    <div id="visual-area">
-        <div id="char-frame"><img id="char-img" src="" alt=""></div>
-    </div>
+    <div id="visual-area"><div id="char-frame"><img id="char-img" src="" alt=""></div></div>
 
     <div id="dialogue-box">
         <div id="char-name"></div>
@@ -145,15 +130,8 @@
     </div>
 </div>
 
-
 <script>
-    const imgs = { 
-        "Ayşe": "ayse.png", 
-        "Zehra": "zehra.png", 
-        "Kahraman": "kahraman.png" 
-    };
-    
-
+    const imgs = { "Ayşe": "ayse.png", "Zehra": "zehra.png", "Kahraman": "kahraman.png" };
     const data = {
         start: { char: "Ayşe", text: "Zehra... Seni Kahraman'la rüyamda gördüm. Bir çocuğunuz vardı ve çok mutluydunuz Bence ona bir şans ver.", opts: [{ t: "Kabul Et", n: "death" }, { t: "Ayşe'yi Süründür", n: "step2" }] },
         death: { death: true },
@@ -168,19 +146,19 @@
         happy: { win: true }
     };
 
-
-    let typingTimer;
-    let isTyping = false;
-    let currentText = "";
-
+    let typingTimer, isTyping = false, currentText = "";
+    const bgMusic = new Audio('muzik.mp3'); bgMusic.loop = true; bgMusic.volume = 0.3;
 
     function playTypeSound() {
-        const sound = new Audio('daktilo.mp3');
-        sound.volume = 0.4;
+        const sound = new Audio('daktilo.mp3'); sound.volume = 0.4;
         sound.play().catch(() => {});
-        sound.onended = function() { this.remove(); };
     }
 
+    function triggerShake() {
+        const container = document.getElementById('game-container');
+        container.classList.add('shake-effect');
+        setTimeout(() => container.classList.remove('shake-effect'), 500);
+    }
 
     document.getElementById('game-container').addEventListener('click', function() {
         if (isTyping) {
@@ -191,149 +169,87 @@
         }
     });
 
-
-    // --- CANLI SÜRÜKLEME SİMÜLASYONU ---
+    // --- DRAG & DROP ---
     const cicek = document.getElementById('drag-cicek');
     const zehraTarget = document.getElementById('drop-zehra');
-
-    let active = false;
-    let currentX = 0;
-    let currentY = 0;
-    let initialX = 0;
-    let initialY = 0;
-    let xOffset = 0;
-    let yOffset = 0;
+    let active = false, currentX = 0, currentY = 0, initialX = 0, initialY = 0, xOffset = 0, yOffset = 0;
 
     cicek.addEventListener("touchstart", dragStart, false);
     cicek.addEventListener("touchend", dragEnd, false);
     cicek.addEventListener("touchmove", drag, false);
-
-    // Mause ile sürükleme desteği (Masaüstü için de görsel takip)
     cicek.addEventListener("mousedown", dragStart, false);
     window.addEventListener("mouseup", dragEnd, false);
     window.addEventListener("mousemove", drag, false);
 
     function dragStart(e) {
-        if (e.type === "touchstart") {
-            initialX = e.touches[0].clientX - xOffset;
-            initialY = e.touches[0].clientY - yOffset;
-        } else {
-            initialX = e.clientX - xOffset;
-            initialY = e.clientY - yOffset;
-        }
+        if (e.type === "touchstart") { initialX = e.touches[0].clientX - xOffset; initialY = e.touches[0].clientY - yOffset; }
+        else { initialX = e.clientX - xOffset; initialY = e.clientY - yOffset; }
         if (e.target === cicek) active = true;
     }
 
     function dragEnd() {
         if (!active) return;
-        
-        initialX = currentX;
-        initialY = currentY;
         active = false;
-
         const zehraRect = zehraTarget.getBoundingClientRect();
         const cicekRect = cicek.getBoundingClientRect();
-
-        // Hedefe değiyor mu?
-        if (
-            cicekRect.left < zehraRect.right &&
-            cicekRect.right > zehraRect.left &&
-            cicekRect.top < zehraRect.bottom &&
-            cicekRect.bottom > zehraRect.top
-        ) {
+        if (cicekRect.left < zehraRect.right && cicekRect.right > zehraRect.left && cicekRect.top < zehraRect.bottom && cicekRect.bottom > zehraRect.top) {
             startGame();
         } else {
-            // Başarısızsa çiçeği fırlatıldığı yere geri gönder
-            xOffset = 0;
-            yOffset = 0;
-            cicek.style.transition = "transform 0.3s ease-out";
-            cicek.style.transform = "translate3d(0, 0, 0)";
-            setTimeout(() => { cicek.style.transition = "none"; }, 300);
+            xOffset = 0; yOffset = 0; cicek.style.transform = "translate3d(0, 0, 0)";
         }
     }
 
     function drag(e) {
         if (active) {
             e.preventDefault();
-            
-            if (e.type === "touchmove") {
-                currentX = e.touches[0].clientX - initialX;
-                currentY = e.touches[0].clientY - initialY;
-            } else {
-                currentX = e.clientX - initialX;
-                currentY = e.clientY - initialY;
-            }
-
-            xOffset = currentX;
-            yOffset = currentY;
+            if (e.type === "touchmove") { currentX = e.touches[0].clientX - initialX; currentY = e.touches[0].clientY - initialY; }
+            else { currentX = e.clientX - initialX; currentY = e.clientY - initialY; }
+            xOffset = currentX; yOffset = currentY;
             cicek.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
         }
     }
 
-
     function startGame() {
         document.getElementById('start-overlay').style.display = 'none';
+        bgMusic.play().catch(() => {});
         render('start');
     }
 
-
     function render(key) {
         const s = data[key];
-        
-        if (s.death) { document.getElementById('death-screen').style.display = 'flex'; return; }
+        if (s.death) { triggerShake(); document.getElementById('death-screen').style.display = 'flex'; return; }
         if (s.win) { document.getElementById('win-screen').style.display = 'flex'; return; }
 
-        const img = document.getElementById('char-img');
         const frame = document.getElementById('char-frame');
-        
         if (imgs[s.char]) {
-            img.src = imgs[s.char];
+            document.getElementById('char-img').src = imgs[s.char];
             frame.style.display = 'flex';
-        } else {
-            frame.style.display = 'none';
-        }
+            frame.classList.add('char-focus'); // Konuşana odaklan
+        } else { frame.style.display = 'none'; }
 
         document.getElementById('char-name').innerText = s.char || "";
         const textElement = document.getElementById('main-text');
         const optCont = document.getElementById('options');
-
-        textElement.innerText = "";
-        optCont.style.display = "none";
+        textElement.innerText = ""; optCont.style.display = "none";
         clearTimeout(typingTimer);
-        
-        currentText = s.text;
-        let i = 0;
-        isTyping = true;
+        currentText = s.text; let i = 0; isTyping = true;
 
         function typeWriter() {
             if (i < s.text.length) {
                 textElement.innerText += s.text.charAt(i);
-                
-                if (s.text.charAt(i) !== " " && i % 2 === 0) {
-                    playTypeSound();
-                }
-
-                i++;
-                typingTimer = setTimeout(typeWriter, 100);
-            } else {
-                optCont.style.display = "flex";
-                isTyping = false;
-            }
+                if (s.text.charAt(i) !== " " && i % 2 === 0) playTypeSound();
+                i++; typingTimer = setTimeout(typeWriter, 100);
+            } else { optCont.style.display = "flex"; isTyping = false; }
         }
         typeWriter();
 
         optCont.innerHTML = '';
         (s.opts || []).forEach(o => {
-            const b = document.createElement('button');
-            b.innerText = o.t;
-            b.onclick = (e) => { 
-                e.stopPropagation(); 
-                render(o.n); 
-            };
+            const b = document.createElement('button'); b.innerText = o.t;
+            b.onclick = (e) => { e.stopPropagation(); render(o.n); };
             optCont.appendChild(b);
         });
     }
-
 </script>
 </body>
 </html>
